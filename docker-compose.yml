@@ -22,8 +22,8 @@ services:
     build:
       context: ./apps/customer_bot
     volumes:
-      - ./apps/customer_bot:/app
-    command: "python main.py"
+      - .:/app
+    command: "python apps/customer_bot/bot.py"
     ports:
       - "8002:8000"
     depends_on:

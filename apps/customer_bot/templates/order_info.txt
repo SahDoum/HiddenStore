@@ -1,0 +1,11 @@
+Заказ:
+ID: {{ order.id }}
+Пользователь: {{ order.user.id }}
+Цена: {{ order.price }}
+
+Доставлен: {{ order.is_delivered }}
+Создан: {{ order.timestamp_created }}
+Обновлен: {{ order.timestamp_updated }}
+Статус: {{ order.status }}
+Оплачен: {{ order.is_paid }}
+Отзыв: {{ order.review }}
