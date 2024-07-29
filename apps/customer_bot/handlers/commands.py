@@ -1,11 +1,17 @@
+import logging
+
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
+
 from init import dp
 from handlers.common import get_user_id, create_order
 from templates.messages import MESSAGES
 from init import api, render_template
 
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class Form(StatesGroup):
     name = State()

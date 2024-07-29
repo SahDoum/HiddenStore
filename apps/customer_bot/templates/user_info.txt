@@ -1,6 +1,3 @@
 Информация о пользователе:
 Имя: {{ user.name }}
-ID: {{ user.id }}
 Telegram ID: {{ user.telegram_id }}
-Создан: {{ user.timestamp_created }}
-Обновлен: {{ user.timestamp_updated }}

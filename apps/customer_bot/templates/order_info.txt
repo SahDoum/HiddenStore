@@ -1,11 +1,9 @@
 Заказ:
 ID: {{ order.id }}
-Пользователь: {{ order.user.id }}
 Цена: {{ order.price }}
+Что внутри: 
+{% for item in order["items"] %} {{ item }} {% endfor %}
 
-Доставлен: {{ order.is_delivered }}
-Создан: {{ order.timestamp_created }}
-Обновлен: {{ order.timestamp_updated }}
 Статус: {{ order.status }}
-Оплачен: {{ order.is_paid }}
+Комментарий: {{ order.comment }}
 Отзыв: {{ order.review }}
