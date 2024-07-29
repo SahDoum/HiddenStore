@@ -16,7 +16,7 @@ bot = Bot(token=TOKEN, parse_mode=ParseMode.HTML)
 storage = RedisStorage2(host=REDIS_HOST, port=REDIS_PORT)
 dp = Dispatcher(bot, storage=storage)
 dp.middleware.setup(LoggingMiddleware())
-api_client = APIClient(base_url=SERVER_URL)
+api = APIClient(base_url=SERVER_URL)
 
 template_loader = FileSystemLoader(searchpath=os.path.join(os.path.dirname(__file__), 'templates'))
 template_env = Environment(loader=template_loader)

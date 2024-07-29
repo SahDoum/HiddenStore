@@ -4,7 +4,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from init import dp
 from handlers.common import get_user_id, create_order
 from templates.messages import MESSAGES
-from init import api_client, render_template
+from init import api, render_template
 
 
 class Form(StatesGroup):
@@ -51,7 +51,7 @@ async def cmd_start(message: types.Message):
 async def cmd_about(message: types.Message):
     await message.reply(MESSAGES['api_request'])
     telegram_id = str(message.from_user.id)
-    user_data = api_client.get_user_by_telegram_id(telegram_id)
+    user_data = api.get_user_by_telegram_id(telegram_id)
     await message.reply('билдим шаблон')
     msg = render_template('user_info.txt', user=user_data)
     await message.reply(msg)
@@ -71,7 +71,7 @@ async def cmd_orders(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         user_id = data.get('user_id')
     if user_id:
-        orders = api_client.get_orders_by_user(user_id)
+        orders = api.get_orders_by_user(user_id)
         if isinstance(orders, list):
             for order in orders:
                 msg = render_template('order_info.txt', order=order)
@@ -83,9 +83,9 @@ async def cmd_orders(message: types.Message, state: FSMContext):
 
 def register_handlers():
     dp.register_message_handler(cmd_start, commands='start')
-    dp.register_message_handler(cmd_skip, commands='skip', state=Form.name)
-    dp.register_message_handler(process_name, state=Form.name)
-    dp.register_message_handler(cmd_name, commands='name')
+    # dp.register_message_handler(cmd_skip, commands='skip', state=Form.name)
+    # dp.register_message_handler(process_name, state=Form.name)
+    # dp.register_message_handler(cmd_name, commands='name')
     dp.register_message_handler(cmd_about, commands='about')
     dp.register_message_handler(cmd_order, commands='order', state="*")
     dp.register_message_handler(cmd_orders, commands='orders', state="*")
