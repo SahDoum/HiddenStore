@@ -1,8 +1,18 @@
 import uuid
 from sqlmodel import SQLModel, Field, Column, JSON
-from typing import Optional
+from typing import Optional, Any, List
 import datetime
 from enum import Enum
+from pydantic import BaseModel
+
+
+import json
+from sqlalchemy import TypeDecorator, VARCHAR
+
+
+# rewrite in pydantic
+# without sqlmodel
+
 
 class BaseObject(SQLModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
@@ -19,9 +29,34 @@ class OrderStatus(str, Enum):
     COMPLETED = "completed"
     CANCELED = "canceled"
 
+class OrderItem(BaseObject, table=True):
+    __tablename__ = "menu"
+    item: str
+    amount: Optional[int]
+    details: Optional[str] = None
+    price: int
+    unit: str
+
+
+# Define a custom type decorator for handling JSON lists of pairs
+class JSONListOfPairs(TypeDecorator):
+    impl = VARCHAR
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return None
+        # Convert list of pairs to JSON string
+        return json.dumps(value)
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return None
+        # Convert JSON string back to list of pairs
+        return json.loads(value)
+
 class Order(BaseObject, table=True):
     __tablename__ = "orders"
-    items: list[dict[str, str]] = Field(sa_column=Column(JSON))
+    items: list[tuple[str, float]] = Field(default=[], sa_column=Column(JSONListOfPairs))  # List of pairs (OrderItem ID, amount)
     price: int
     status: OrderStatus = Field(default=OrderStatus.PENDING)
     comment: Optional[str] = None
@@ -29,10 +64,3 @@ class Order(BaseObject, table=True):
     is_delivered: bool = Field(default=False)
     is_paid: bool = Field(default=False)
     user: str = Field(default=None, foreign_key="users.id")
-
-# Example structure for the items field
-# items = [
-#     {"item": "item1", "count": 1, "details": "details1", "price": 100},
-#     {"item": "item2", "count": 2, "details": "details2", "price": 200},
-#     ...
-# ]

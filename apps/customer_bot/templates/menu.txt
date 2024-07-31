@@ -1,0 +1,12 @@
+{% if items %}
+<b>Меню доступных товаров:</b>
+
+{% for item in items %}
+- <b>{{ item.item }}</b>
+  - <b>Детали:</b> {{ item.details }}
+  - <b>Цена:</b> {{ item.price }} руб./{{ item.unit }}
+{% endfor %}
+
+{% else %}
+<b>Меню пустое или недоступно.</b>
+{% endif %}

@@ -1,11 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
-from enum import Enum
-
-class OrderStatus(str, Enum):
-    PENDING = "pending"
-    COMPLETED = "completed"
-    CANCELED = "canceled"
+from .models import OrderStatus, OrderItem
 
 class UserCreate(BaseModel):
     name: str
@@ -16,7 +11,7 @@ class UserUpdate(BaseModel):
     telegram_id: Optional[str] = None
 
 class OrderCreate(BaseModel):
-    items: list[dict[str, str]]
+    items: list[OrderItem]
     price: int
     user: str
     comment: Optional[str] = None

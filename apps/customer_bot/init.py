@@ -10,13 +10,14 @@ from config import TOKEN, REDIS_HOST, REDIS_PORT, SERVER_URL
 import sys
 import os
 sys.path.append(os.path.abspath('.'))
-from api_client.client import APIClient
+from libs.hidden_client import APIClient, APIConfig
 
 bot = Bot(token=TOKEN, parse_mode=ParseMode.HTML)
 storage = RedisStorage2(host=REDIS_HOST, port=REDIS_PORT)
 dp = Dispatcher(bot, storage=storage)
 dp.middleware.setup(LoggingMiddleware())
-api = APIClient(base_url=SERVER_URL)
+# api = APIClient(base_url=SERVER_URL)
+APIConfig.setup(base_url=SERVER_URL)
 
 template_loader = FileSystemLoader(searchpath=os.path.join(os.path.dirname(__file__), 'templates'))
 template_env = Environment(loader=template_loader)
