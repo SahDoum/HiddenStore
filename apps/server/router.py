@@ -1,9 +1,9 @@
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
-from libs import models
-from libs import schemas
-from .api import UserAPI, OrderAPI, ItemsAPI
+from libs.models import models
+from libs.models import schemas
+from api import UserAPI, OrderAPI, ItemsAPI
 
 app = FastAPI()
 

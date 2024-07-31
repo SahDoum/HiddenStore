@@ -1,11 +1,5 @@
 import httpx
-from typing import List, Optional
-
-import sys
-import os
-sys.path.append(os.path.abspath('.'))
-from libs.schemas import UserCreate, UserUpdate, OrderCreate, OrderUpdate
-
+from libs.models.schemas import UserCreate, UserUpdate, OrderCreate, OrderUpdate
 from .config import APIConfig
 
 class APIClient:
@@ -22,6 +16,12 @@ class APIClient:
             headers["Authorization"] = f"Bearer {self.api_key}"
         return headers
     
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        await self.client.aclose()
+
     async def close(self):
         await self.client.aclose()
     
@@ -31,7 +31,7 @@ class APIClient:
         response.raise_for_status()
         return response.json()
     
-    async def get_users(self) -> List[dict]:
+    async def get_users(self) -> list[dict]:
         response = await self.client.get("/users/", headers=self._get_headers())
         response.raise_for_status()
         return response.json()
@@ -62,7 +62,7 @@ class APIClient:
         response.raise_for_status()
         return response.json()
 
-    async def get_orders(self) -> List[dict]:
+    async def get_orders(self) -> list[dict]:
         response = await self.client.get("/orders/", headers=self._get_headers())
         response.raise_for_status()
         return response.json()
@@ -72,7 +72,7 @@ class APIClient:
         response.raise_for_status()
         return response.json()
     
-    async def get_orders_by_user(self, user_id: str) -> List[dict]:
+    async def get_orders_by_user(self, user_id: str) -> list[dict]:
         response = await self.client.get(f"/orders/user/{user_id}", headers=self._get_headers())
         response.raise_for_status()
         return response.json()

@@ -11,7 +11,7 @@ class UserUpdate(BaseModel):
     telegram_id: Optional[str] = None
 
 class OrderCreate(BaseModel):
-    items: list[OrderItem]
+    items: list[tuple[str, float]]
     price: int
     user: str
     comment: Optional[str] = None

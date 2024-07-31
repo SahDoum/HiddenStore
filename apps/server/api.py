@@ -1,9 +1,9 @@
 # server/api.py
 from sqlmodel import select
 from typing import Optional, Any
-from libs.models import User, Order
-from libs.schemas import UserCreate, UserUpdate, OrderCreate, OrderUpdate
-from .db_config import get_session
+from libs.models.models import User, Order
+from libs.models.schemas import UserCreate, UserUpdate, OrderCreate, OrderUpdate
+from db_config import get_session
 import datetime
 import json
 
@@ -63,9 +63,8 @@ class OrderAPI:
     @staticmethod
     async def create(data: OrderCreate) -> Order:
         async with await get_session() as session:
-
-            items_serialized = [item.to_dict() for item in data.items]
-            print(items_serialized)  # This will print the serialized items
+            # items_serialized = [item.to_dict() for item in data.items]
+            print(data.items)  # This will print the serialized items
             order = Order(items=data.items, price=data.price, user=data.user, comment=data.comment)
             session.add(order)
             await session.commit()
