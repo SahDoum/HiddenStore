@@ -9,5 +9,6 @@ MESSAGES = {
     'order_success': "Ваш заказ оформлен! ID заказа: {order_id}",
     'error_user_id': "Ошибка: ID пользователя не найден. Пожалуйста, сначала введите имя.",
     'order_info': "Заказ: {order}",
-    'error_orders': "Ошибка получения заказов."
+    'error_orders': "Ошибка получения заказов.",
+    'error_fetching_menu': "Меню не сфетчилось"
 }
