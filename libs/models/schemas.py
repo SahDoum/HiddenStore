@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
-from .models import OrderStatus, OrderItem
+
+from .statuses import OrderStatus
 
 class UserCreate(BaseModel):
     name: str

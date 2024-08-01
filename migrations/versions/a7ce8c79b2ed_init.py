@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 24cbd849f7c9
+Revision ID: a7ce8c79b2ed
 Revises: 
-Create Date: 2024-07-30 01:18:12.994603
+Create Date: 2024-08-01 19:06:28.728549
 
 """
 from typing import Sequence, Union
@@ -11,14 +11,32 @@ from alembic import op
 import sqlalchemy as sa
 
 import sqlmodel
-import libs
+
+
+import json
+from sqlalchemy import TypeDecorator, VARCHAR
 
 
 # revision identifiers, used by Alembic.
-revision: str = '24cbd849f7c9'
+revision: str = 'a7ce8c79b2ed'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
+
+class JSONListOfPairs(TypeDecorator):
+    impl = VARCHAR
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return None
+        # Convert list of pairs to JSON string
+        return json.dumps(value)
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return None
+        # Convert JSON string back to list of pairs
+        return json.loads(value)
 
 
 def upgrade() -> None:
@@ -47,9 +65,9 @@ def upgrade() -> None:
     sa.Column('id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('timestamp_created', sa.DateTime(), nullable=False),
     sa.Column('timestamp_updated', sa.DateTime(), nullable=False),
-    sa.Column('items', libs.models.JSONListOfPairs(), nullable=True),
+    sa.Column('items', JSONListOfPairs(), nullable=True),
     sa.Column('price', sa.Integer(), nullable=False),
-    sa.Column('status', sa.Enum('PENDING', 'COMPLETED', 'CANCELED', name='orderstatus'), nullable=False),
+    sa.Column('status', sa.Enum('CREATED', 'USER_COMMENT', 'USER_REVIEW', 'PROCESSING', 'PACKED', 'COMPLETED', 'CANCELED', 'RETURNED', 'REFUNDED', 'FAILED', name='orderstatus'), nullable=False),
     sa.Column('comment', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('review', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('is_delivered', sa.Boolean(), nullable=False),

@@ -10,10 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 async def on_create(user_id, order_id):
-    hidden_order = await HiddenOrder.get(order_id)
 
     await bot.send_message(KITCHEN_TG_ID, f"Новый заказ. Id: {order_id}") 
-    if not hidden_order:
+    hidden_order = await HiddenOrder.get(order_id)
+    logger.error(hidden_order)
+    if hidden_order is None:
         await bot.send_message(KITCHEN_TG_ID, "заказ не сфетчился") 
         return
 
@@ -21,5 +22,5 @@ async def on_create(user_id, order_id):
     await bot.send_message(KITCHEN_TG_ID, msg) 
 
 
-def register_callbacks():
+def register_notifiers():
     redis_client.listen(msg_type="create", callback=on_create)

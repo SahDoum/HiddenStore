@@ -2,8 +2,10 @@ import logging
 from aiogram import types
 from init import dp
 from templates.messages import MESSAGES
-from init import render_template, redis_client
+from init import render_template
 from libs.hidden_client import HiddenUser, HiddenOrder, HiddenMenu, HiddenItem, OrderItem
+
+from keyboards import menu_keyboard
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -62,16 +64,13 @@ async def cmd_orders(message: types.Message):
 async def cmd_menu(message: types.Message):
     menu = await HiddenMenu.get_items()
     if len(menu.hidden_items) > 0:
-        msg = render_template('menu.txt', items=menu.items())
-        await message.reply(msg)
+        menu_items = menu.items()
+        keyboard = menu_keyboard(menu_items)
+        msg = render_template('menu.txt', items=menu_items)
+        await message.reply(msg, reply_markup=keyboard)
     else:
         await message.reply(MESSAGES['error_fetching_menu'])
 
-# @dp.message_handler(commands='redis')
-# async def cmd_redis(message: types.Message):
-#     telegram_id = str(message.from_user.id)
-#     user = await HiddenUser.get_or_create(telegram_id=telegram_id)
-#     await redis_client.publish('create', user)
 
 @dp.message_handler(commands='create')
 async def cmd_create(message: types.Message):
@@ -105,4 +104,3 @@ def register_handlers():
     dp.register_message_handler(cmd_orders, commands='orders')
     dp.register_message_handler(cmd_menu, commands='menu')
     dp.register_message_handler(cmd_create, commands='create')
-    # dp.register_message_handler(cmd_redis, commands='redis')

@@ -3,9 +3,9 @@ import json
 import logging
 import redis.asyncio as redis
 import async_timeout
+from typing import Union
 
 from libs.models.models import User, Order
-from libs.hidden_client import HiddenUser, HiddenOrder
 
 
 # Set up logger
@@ -18,13 +18,12 @@ class HiddenRedis:
         self.channel = "order-update"
         self.event_loop = asyncio.get_event_loop()
 
-    async def publish(self, msg_type: str, user: User, order: Order): #, order: HiddenOrder):
+    async def publish(self, msg_type: str, user: Union[User, None], order: Union[Order, None]):
         # Serialize the message
         message = json.dumps({
             'type': msg_type,
-            'user_id': user.id,
-            'order_id': order.id,
-            # 'order': order.order.to_dict()  # assuming HiddenOrder has a to_dict method
+            'user_id': user.id if user else "",
+            'order_id': order.id if order else "",
         })
         await self.redis_client.publish(self.channel, message)
 

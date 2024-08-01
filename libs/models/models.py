@@ -1,14 +1,13 @@
 import uuid
 from sqlmodel import SQLModel, Field, Column, JSON
-from typing import Optional, Any, List
+from typing import Optional
 import datetime
-from enum import Enum
-from pydantic import BaseModel
-
+# from pydantic import BaseModel
 
 import json
 from sqlalchemy import TypeDecorator, VARCHAR
 
+from .statuses import OrderStatus
 
 # rewrite in pydantic
 # without sqlmodel
@@ -24,10 +23,6 @@ class User(BaseObject, table=True):
     name: str
     telegram_id: str = Field(unique=True, index=True)
 
-class OrderStatus(str, Enum):
-    PENDING = "pending"
-    COMPLETED = "completed"
-    CANCELED = "canceled"
 
 class OrderItem(BaseObject, table=True):
     __tablename__ = "menu"
@@ -57,7 +52,7 @@ class Order(BaseObject, table=True):
     __tablename__ = "orders"
     items: list[tuple[str, float]] = Field(default=[], sa_column=Column(JSONListOfPairs))  # List of pairs (OrderItem ID, amount)
     price: int
-    status: OrderStatus = Field(default=OrderStatus.PENDING)
+    status: OrderStatus = Field(default=OrderStatus.CREATED)
     comment: Optional[str] = None
     review: Optional[str] = None
     is_delivered: bool = Field(default=False)
