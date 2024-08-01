@@ -4,7 +4,7 @@ from typing import Optional, List
 import json
 
 from .client import APIClient
-from libs.models.schemas import UserCreate, OrderCreate, OrderUpdate
+from libs.models.schemas import UserCreate, OrderCreate, OrderUpdate, OrderItemCreate, OrderItemUpdate
 from libs.models.models import OrderItem, Order, User
 
 logging.basicConfig(level=logging.INFO)
@@ -73,17 +73,59 @@ class HiddenOrder:
     def items(self) -> list[tuple[OrderItem, float]]:
         return [(self.str_to_item(item), count) for item, count in self.order.items]
 
-class HiddenMenu:
-    def __init__(self, items: List[OrderItem]):
-        self.items = items
+class HiddenItem:
+    def __init__(self, item: OrderItem):
+        self.item = item
 
     @classmethod
-    async def get_items(cls):
+    async def create(cls, item: str, details: Optional[str], price: int, unit: str) -> 'HiddenItem':
         async with APIClient() as api_client:
-            items = await api_client.get_menu_items()
-        return cls([OrderItem.parse_obj(item) for item in items])
+            item_data = OrderItemCreate(
+                item=item,
+                details=details,
+                price=price,
+                unit=unit
+            )
+            created_item = await api_client.create_menu_item(item_data)
+        return cls(OrderItem.parse_obj(created_item))
 
-    async def update_items(self):
+    @classmethod
+    async def get(cls, item_id: str) -> Optional['HiddenItem']:
         async with APIClient() as api_client:
-            success = await api_client.update_menu_items(items=[item.dict() for item in self.items])
+            item_data = await api_client.get_menu_item(item_id)
+        return cls(OrderItem.parse_obj(item_data)) if item_data else None
+
+    async def update(self, item_data: OrderItemUpdate) -> bool:
+        async with APIClient() as api_client:
+            updated_item = await api_client.update_menu_item(self.item.id, item_data)
+        if updated_item:
+            self.item = OrderItem.parse_obj(updated_item)
+            return True
+        return False
+
+    async def delete(self) -> bool:
+        async with APIClient() as api_client:
+            success = await api_client.delete_menu_item(self.item.id)
         return success
+
+
+class HiddenMenu:
+    def __init__(self, items: List[OrderItem]):
+        self.hidden_items = [HiddenItem(item) for item in items]
+
+    @classmethod
+    async def get_items(cls) -> 'HiddenMenu':
+        async with APIClient() as api_client:
+            try:
+                items = await api_client.get_menu_items()
+                return cls([OrderItem.parse_obj(item) for item in items])
+            except:
+                return cls([])
+
+    def items(self) -> list[OrderItem]:
+        return [item.item for item in self.hidden_items]
+
+    # async def update_items(self) -> bool:
+    #     async with APIClient() as api_client:
+    #         success = await api_client.update_menu_items(items=[item.item.dict() for item in self.hidden_items])
+    #     return success

@@ -1,8 +1,8 @@
 # server/api.py
 from sqlmodel import select
 from typing import Optional, Any
-from libs.models.models import User, Order
-from libs.models.schemas import UserCreate, UserUpdate, OrderCreate, OrderUpdate
+from libs.models.models import User, Order, OrderItem
+from libs.models.schemas import UserCreate, UserUpdate, OrderCreate, OrderUpdate, OrderItemCreate, OrderItemUpdate
 from db_config import get_session
 import datetime
 import json
@@ -63,8 +63,6 @@ class OrderAPI:
     @staticmethod
     async def create(data: OrderCreate) -> Order:
         async with await get_session() as session:
-            # items_serialized = [item.to_dict() for item in data.items]
-            print(data.items)  # This will print the serialized items
             order = Order(items=data.items, price=data.price, user=data.user, comment=data.comment)
             session.add(order)
             await session.commit()
@@ -120,22 +118,54 @@ class OrderAPI:
                 return True
             return False
         
+
 class ItemsAPI:
     @staticmethod
-    async def get_all() -> list[Any]:
-        try:
-            with open('apps/server/menu/items.txt', 'r') as file:
-                items = json.load(file)
-            return items
-        except FileNotFoundError:
-            return []
+    async def create(data: OrderItemCreate) -> OrderItem:
+        async with await get_session() as session:
+            item = OrderItem(item=data.item, amount=data.amount, details=data.details, price=data.price, unit=data.unit)
+            session.add(item)
+            await session.commit()
+            await session.refresh(item)
+            return item
 
     @staticmethod
-    async def update(items: list[Any]) -> bool:
-        try:
-            with open('apps/server/menu/items.txt', 'w') as file:
-                json.dump(items, file)
-            return True
-        except Exception as e:
-            print(f"An error occurred: {e}")
+    async def get(item_id: str) -> Optional[OrderItem]:
+        async with await get_session() as session:
+            return await session.get(OrderItem, item_id)
+
+    @staticmethod
+    async def get_all() -> list[OrderItem]:
+        async with await get_session() as session:
+            result = await session.execute(select(OrderItem))
+            return result.scalars().all()
+
+    @staticmethod
+    async def update(item_id: str, data: OrderItemUpdate) -> Optional[OrderItem]:
+        async with await get_session() as session:
+            item = await session.get(OrderItem, item_id)
+            if item:
+                if data.item is not None:
+                    item.item = data.item
+                if data.amount is not None:
+                    item.amount = data.amount
+                if data.details is not None:
+                    item.details = data.details
+                if data.price is not None:
+                    item.price = data.price
+                if data.unit is not None:
+                    item.unit = data.unit
+                item.timestamp_updated = datetime.datetime.now()
+                await session.commit()
+                await session.refresh(item)
+            return item
+
+    @staticmethod
+    async def delete(item_id: str) -> bool:
+        async with await get_session() as session:
+            item = await session.get(OrderItem, item_id)
+            if item:
+                await session.delete(item)
+                await session.commit()
+                return True
             return False

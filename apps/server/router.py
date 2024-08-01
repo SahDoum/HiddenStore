@@ -75,14 +75,32 @@ async def delete_order(order_id: str):
         raise HTTPException(status_code=404, detail="Order not found")
     return success
 
-@app.get("/menu/items", response_model=list[dict[str, Any]])
+@app.get("/menu/items", response_model=list[models.OrderItem])
 async def get_menu_items():
     items = await ItemsAPI.get_all()
     return items
 
-@app.put("/menu/items", response_model=bool)
-async def update_menu_items(items: list[Any]):
-    success = await ItemsAPI.update(items=items)
+@app.post("/menu/items", response_model=models.OrderItem)
+async def create_menu_item(item: schemas.OrderItemCreate):
+    return await ItemsAPI.create(data=item)
+
+@app.get("/menu/items/{item_id}", response_model=models.OrderItem)
+async def get_menu_item(item_id: str):
+    item = await ItemsAPI.get(item_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return item
+
+@app.put("/menu/items/{item_id}", response_model=models.OrderItem)
+async def update_menu_item(item_id: str, item: schemas.OrderItemUpdate):
+    updated_item = await ItemsAPI.update(item_id, item)
+    if not updated_item:
+        raise HTTPException(status_code=404, detail="Item not found or update failed")
+    return updated_item
+
+@app.delete("/menu/items/{item_id}", response_model=bool)
+async def delete_menu_item(item_id: str):
+    success = await ItemsAPI.delete(item_id)
     if not success:
-        raise HTTPException(status_code=500, detail="Failed to update menu items")
+        raise HTTPException(status_code=404, detail="Item not found or delete failed")
     return success

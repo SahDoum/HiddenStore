@@ -23,3 +23,17 @@ class OrderUpdate(BaseModel):
     is_paid: Optional[bool] = None
     price: Optional[int] = None
     status: Optional[OrderStatus] = None
+
+class OrderItemCreate(BaseModel):
+    item: str
+    amount: Optional[int] = None
+    details: Optional[str] = None
+    price: int
+    unit: str
+
+class OrderItemUpdate(BaseModel):
+    item: Optional[str] = None
+    amount: Optional[int] = None
+    details: Optional[str] = None
+    price: Optional[int] = None
+    unit: Optional[str] = None

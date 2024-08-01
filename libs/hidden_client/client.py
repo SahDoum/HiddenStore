@@ -1,5 +1,5 @@
 import httpx
-from libs.models.schemas import UserCreate, UserUpdate, OrderCreate, OrderUpdate
+from libs.models.schemas import UserCreate, UserUpdate, OrderCreate, OrderUpdate, OrderItemCreate, OrderItemUpdate
 from .config import APIConfig
 
 class APIClient:
@@ -93,8 +93,22 @@ class APIClient:
         response.raise_for_status()
         return response.json()
     
-    async def update_menu_items(self, items: list[dict]) -> bool:
-        payload = {"items": items}
-        response = await self.client.put("/menu/items", json=payload, headers=self._get_headers())
+    async def create_menu_item(self, item_data: OrderItemCreate) -> dict:
+        response = await self.client.post("/menu/items", json=item_data.dict(), headers=self._get_headers())
+        response.raise_for_status()
+        return response.json()
+    
+    async def get_menu_item(self, item_id: str) -> dict:
+        response = await self.client.get(f"/menu/items/{item_id}", headers=self._get_headers())
+        response.raise_for_status()
+        return response.json()
+    
+    async def update_menu_item(self, item_id: str, item_data: OrderItemUpdate) -> dict:
+        response = await self.client.put(f"/menu/items/{item_id}", json=item_data.dict(exclude_unset=True), headers=self._get_headers())
+        response.raise_for_status()
+        return response.json()
+    
+    async def delete_menu_item(self, item_id: str) -> bool:
+        response = await self.client.delete(f"/menu/items/{item_id}", headers=self._get_headers())
         response.raise_for_status()
         return response.json()
