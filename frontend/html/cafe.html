@@ -30,7 +30,7 @@
 			<div class="item__counter js-item-counter">1</div>
 			<div class="item__photo">
 				<picture class="item-icon">
-					<img src="{{ url_for('static', path="img/Burger.png") }}">
+					<img src="{{ url_for('static', path='img/' + item.image ) }}">
 				</picture>
 			</div>
 			<div class="item__label">
@@ -67,7 +67,7 @@
 				<div class="order__item js-order-item" data-item-id="{{ item.id }}">
 					<div class="order__item-photo">
 						<picture class="item-icon item-icon--order">
-							<img src="{{ url_for('static', path="img/Burger.png") }}">
+							<img src="{{ url_for('static', path='img/' + item.image ) }}">
 						</picture>
 					</div>
 					<div class="order__item-label">

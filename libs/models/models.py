@@ -31,6 +31,7 @@ class OrderItem(BaseObject, table=True):
     details: Optional[str] = None
     price: int
     unit: str
+    image: str = "default.png"
 
 # Define a custom type decorator for handling JSON lists of pairs
 class JSONListOfPairs(TypeDecorator):
