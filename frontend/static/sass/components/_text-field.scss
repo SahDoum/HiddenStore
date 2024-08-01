@@ -1,0 +1,35 @@
+.text-field__wrap {
+	margin-top: 14px;
+}
+
+.text-field {
+	font-family: var(--default-font);
+	font-size: 17px;
+	line-height: 21px;
+	-webkit-font-smoothing: antialiased;
+	padding: 12px 20px 13px;
+	box-sizing: border-box;
+	display: block;
+	outline: none;
+	border: none;
+	resize: none;
+	color: var(--text-color);
+	user-select: auto;
+	cursor: auto;
+	width: 100%;
+}
+
+.text-field::placeholder {
+	transition: color var(--animation);
+	color: var(--placeholder-color);
+	text-overflow: ellipsis;
+}
+
+.text-field__hint {
+	font-family: var(--default-font);
+	font-size: 14px;
+	line-height: 18px;
+	-webkit-font-smoothing: antialiased;
+	padding: 10px 20px 24px;
+	color: var(--hint-color);
+}

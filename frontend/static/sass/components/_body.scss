@@ -1,0 +1,21 @@
+body.order-mode .page--items {
+	max-height: 0 !important;
+	opacity: 0 !important;
+}
+
+body.order-mode .page--order-overview {
+	opacity: 1;
+}
+
+body.payment-mode .page--order-overview {
+	opacity: 1;
+}
+
+body.payment-mode .page--order-overview {
+	max-height: 0 !important;
+	opacity: 0 !important;
+}
+
+body.payment-mode .page--payment {
+	opacity: 1;
+}

@@ -1,0 +1,35 @@
+.status {
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	transform: translateY(var(--tg-viewport-height, 100vh));
+}
+
+.status__message {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: 100%;
+	padding: 8px 20px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #e64d44;
+	box-shadow: 0 var(--status-height) #e64d44;
+	color: #fff;
+	height: var(--status-height);
+	transition: transform var(--animation), visibility var(--animation);
+	transform: translateY(var(--status-height));
+	box-sizing: border-box;
+	pointer-events: none;
+	visibility: hidden;
+	z-index: 11;
+}
+
+.status--shown {
+	pointer-events: auto;
+	visibility: visible;
+	transform: translateY(0);
+}

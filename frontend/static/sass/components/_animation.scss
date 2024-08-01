@@ -1,0 +1,134 @@
+// // animations.scss
+
+
+// @keyframes rotate-circle {
+// 	from {
+// 		transform: rotateZ(-90deg);
+// 	}
+
+// 	to {
+// 		transform: rotateZ(630deg);
+// 	}
+// }
+
+// @keyframes resize-circle {
+// 	from {
+// 		stroke-dashoffset: 0;
+// 	}
+
+// 	to {
+// 		stroke-dashoffset: 12500px;
+// 	}
+// }
+
+@keyframes badge-incr {
+
+	from,
+	to {
+		transform: scale3d(1, 1, 1);
+	}
+
+	40% {
+		transform: scale3d(1.2, 1.2, 1);
+	}
+}
+
+@keyframes badge-incr2 {
+
+	from,
+	to {
+		transform: scale3d(1, 1, 1);
+	}
+
+	40% {
+		transform: scale3d(1.2, 1.2, 1);
+	}
+}
+
+@keyframes badge-decr {
+
+	from,
+	to {
+		transform: scale3d(1, 1, 1);
+	}
+
+	40% {
+		transform: scale3d(0.8, 0.8, 1);
+	}
+}
+
+@keyframes badge-decr2 {
+
+	from,
+	to {
+		transform: scale3d(1, 1, 1);
+	}
+
+	40% {
+		transform: scale3d(0.8, 0.8, 1);
+	}
+}
+
+@keyframes badge-show {
+	from {
+		transform: scale3d(0.5, 0.5, 1);
+		opacity: 0;
+		visibility: hidden;
+	}
+
+	30% {
+		transform: scale3d(1.2, 1.2, 1);
+	}
+
+	to {
+		transform: scale3d(1, 1, 1);
+		opacity: 1;
+		visibility: visible;
+	}
+}
+
+@keyframes badge-hide {
+	from {
+		transform: scale3d(1, 1, 1);
+		opacity: 1;
+		visibility: visible;
+	}
+
+	to {
+		transform: scale3d(0.5, 0.5, 1);
+		opacity: 0;
+		visibility: hidden;
+	}
+}
+
+// .loading-icon {
+// 	position: absolute;
+// 	top: 0;
+// 	right: 0;
+// 	pointer-events: none;
+// 	transform: scale(0);
+// 	visibility: hidden;
+// 	opacity: 0.2;
+// 	transform-origin: 50%;
+// 	transition: all $animation;
+
+// 	body.loading & {
+// 		transition-delay: 0.4s;
+// 		transform: scale(1);
+// 		visibility: visible;
+// 		opacity: 1;
+// 	}
+
+// 	.loading-icon-circle {
+// 		stroke: #fff;
+// 		stroke-width: 2.25px;
+// 		stroke-linecap: round;
+// 		fill: transparent;
+// 		transform: rotateZ(-90deg);
+// 		transform-origin: 50%;
+// 		animation: rotate-circle linear 1.5s infinite, resize-circle linear 360s infinite;
+// 		stroke-dasharray: calc(var(--radius) * 6.28);
+// 		r: var(--radius);
+// 		--radius: 9px;
+// 	}
+// }
