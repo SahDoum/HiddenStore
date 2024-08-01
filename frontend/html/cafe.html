@@ -1,124 +1,127 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-	<meta charset="utf-8">
-	<title>Hidden Kitchen</title>
-	<meta name="viewport"
-		content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, viewport-fit=cover" />
-	<meta name="format-detection" content="telephone=no" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta name="MobileOptimized" content="176" />
-	<meta name="HandheldFriendly" content="True" />
-	<meta name="robots" content="noindex, nofollow" />
-	<script src="https://tg.dev/js/telegram-web-app.js?7"></script>
-	<script>
-		function setThemeClass() {
-			document.documentElement.className = Telegram.WebApp.colorScheme;
-		}
-		Telegram.WebApp.onEvent('themeChanged', setThemeClass);
-		setThemeClass();
-	</script>
-	<link href="{{ url_for('static', path='css/cafe.css') }}" rel="stylesheet">
+    <meta charset="utf-8">
+    <title>Hidden Kitchen</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, viewport-fit=cover" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="MobileOptimized" content="176" />
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="robots" content="noindex, nofollow" />
+    <script src="https://tg.dev/js/telegram-web-app.js?7"></script>
+    <script>
+        function setThemeClass() {
+            document.documentElement.className = Telegram.WebApp.colorScheme;
+        }
+        Telegram.WebApp.onEvent('themeChanged', setThemeClass);
+        setThemeClass();
+    </script>
+    <link href="{{ url_for('static', path='css/cafe.css') }}" rel="stylesheet">
 </head>
 
 <body>
 
-	<section class="cafe-page cafe-items">
-		{% for item in items %}
-		<div class="cafe-item js-item" data-item-id="{{ item.id }}" data-item-price="{{ item.price }}">
-			<div class="cafe-item-counter js-item-counter">1</div>
-			<div class="cafe-item-photo">
-				<picture class="cafe-item-lottie">
-					<img src="{{ url_for('static', path="img/Burger.png") }}">
-				</picture>
-			</div>
-			<div class="cafe-item-label">
-				<span class="cafe-item-title">{{ item.item }}</span>
-				<span class="cafe-item-price">₾{{ item.price }}</span>
-			</div>
-			<div class="cafe-item-buttons">
-				<button class="cafe-item-decr-button js-item-decr-btn button-item ripple-handler">
-					<span class="ripple-mask"><span class="ripple"></span></span>
-				</button>
-				<button class="cafe-item-incr-button js-item-incr-btn button-item ripple-handler">
-					<span class="button-item-label">Add</span>
-					<span class="ripple-mask"><span class="ripple"></span></span>
-				</button>
-			</div>
-		</div>
-		{% endfor %}
-		<div class="cafe-item-shadow"></div>
-		<div class="cafe-item-shadow"></div>
-		<div class="cafe-item-shadow"></div>
-		<div class="cafe-item-shadow"></div>
-	</section>
+    <section class="page page--items">
+        {% for item in items %}
+        <div class="item js-item" data-item-id="{{ item.id }}" data-item-price="{{ item.price }}">
+            <div class="item__counter js-item-counter">1</div>
+            <div class="item__photo">
+                <picture class="item__lottie">
+                    <img src="{{ url_for('static', path="img/Burger.png") }}">
+                </picture>
+            </div>
+            <div class="item__label">
+                <span class="item__title">{{ item.item }}</span>
+                <span class="item__price">₾{{ item.price }}</span>
+            </div>
+            <div class="item__buttons">
+                <button class="item__button--decrement js-item-decr-btn button button--ripple-handler">
+                    <span class="button__label">Remove</span>
+                    <span class="ripple-mask"><span class="ripple"></span></span>
+                </button>
+                <button class="item__button--increment js-item-incr-btn button button--ripple-handler">
+                    <span class="button__label">Add</span>
+                    <span class="ripple-mask"><span class="ripple"></span></span>
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="item__shadow"></div>
+        <div class="item__shadow"></div>
+        <div class="item__shadow"></div>
+        <div class="item__shadow"></div>
+    </section>
 
-	<section class="cafe-page cafe-order-overview">
-		<div class="cafe-block">
-			<div class="cafe-order-header-wrap">
-				<h2 class="cafe-order-header">Ваш Заказ</h2>
-				<span class="cafe-order-edit js-order-edit">Изменить</span>
-			</div>
+    <section class="page page--order-overview">
+        <div class="block">
+            <div class="order__header-wrap">
+                <h2 class="order__header">Ваш Заказ</h2>
+                <span class="order__edit js-order-edit">Изменить</span>
+            </div>
 
-			<div class="cafe-order-items">
-				{% for item in items %}
-				<div class="cafe-order-item js-order-item" data-item-id="{{ item.id }}">
-					<div class="cafe-order-item-photo">
-						<picture class="cafe-item-lottie">
-							<img src="{{ url_for('static', path="img/Burger.png") }}">
-						</picture>
-					</div>
-					<div class="cafe-order-item-label">
-						<div class="cafe-order-item-title">{{ item.item }}
-							<span class="cafe-order-item-counter"><span class="js-order-item-counter">1</span>x</span>
-						</div>
-						<div class="cafe-order-item-description">{{ item.item }}</div>
-					</div>
-					<div class="cafe-order-item-price js-order-item-price">₾{{ item.price }}</div>
-				</div>
-				{% endfor %}
-			</div>
-		</div>
-		<div class="cafe-text-field-wrap">
-			<textarea class="cafe-text-field js-order-comment-field cafe-block" rows="1"
-				placeholder="Комментарий к заказу…"></textarea>
-			<div class="cafe-text-field-hint">
-				Любые дополнительные запросы, детали, пожелания.
-			</div>
-		</div>
-	</section>
+            <div class="order__items">
+                {% for item in items %}
+                <div class="order__item js-order-item" data-item-id="{{ item.id }}">
+                    <div class="order__item-photo">
+                        <picture class="item__lottie">
+                            <img src="{{ url_for('static', path="img/Burger.png") }}">
+                        </picture>
+                    </div>
+                    <div class="order__item-label">
+                        <div class="order__item-title">{{ item.item }}
+                            <span class="order__item-counter"><span class="js-order-item-counter">1</span>x</span>
+                        </div>
+                        <div class="order__item-description">{{ item.item }}</div>
+                    </div>
+                    <div class="order__item-price js-order-item-price">₾{{ item.price }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="text-field__wrap">
+            <textarea class="text-field js-order-comment-field block" rows="1" placeholder="Комментарий к заказу…"></textarea>
+            <div class="text-field__hint">
+                Любые дополнительные запросы, детали, пожелания.
+            </div>
+        </div>
+    </section>
 
-	<section class="cafe-page cafe-payment">
-		<div class="cafe-block">
-			<div class="cafe-order-header-wrap">
-				<h2 class="cafe-order-header">Заказываю</h2>
-				<span class="cafe-order-edit js-payment-edit">Назад</span>
-			</div>
-		</div>
-	</section>
+    <section class="page page--payment">
+        <div class="block">
+            <div class="order__header-wrap">
+                <h2 class="order__header">Заказываю</h2>
+                <span class="order__edit js-payment-edit">Назад</span>
+            </div>
+        </div>
+    </section>
 
-	<div class="cafe-status-wrap">
-		<div class="cafe-status js-status"></div>
-	</div>
+    <div class="status__wrap">
+        <div class="status__message js-status"></div>
+    </div>
 
-	<script src="https://tg.dev/js/jquery.min.js"></script>
-	<!-- <script src="https://tg.dev/js/tgsticker.js?27"></script> -->
-	<script src="{{ url_for('static', path='js/jquery.validate.min.js') }}"></script>
-	<script src="{{ url_for('static', path='js/cafe.js') }}"></script>
-	<script>
-		var userId = 0; //JSON.parse(new URLSearchParams(window.Telegram.WebApp.initData).get('user')).id;
+    <script src="https://tg.dev/js/jquery.min.js"></script>
+    <script src="{{ url_for('static', path='js/jquery.validate.min.js') }}"></script>
+    <script src="{{ url_for('static', path='js/cafe.js') }}"></script>
+    <script>
+        var userId = 0; //JSON.parse(new URLSearchParams(window.Telegram.WebApp.initData).get('user')).id;
 
-		// let initData = new URLSearchParams(window.Telegram.WebApp.initData);
-		var initDataHash = "";//initData.get('hash');
+        // let initData = new URLSearchParams(window.Telegram.WebApp.initData);
+        var initDataHash = ""; //initData.get('hash');
 
-		// initData.delete('hash');
-		// initData.sort();
-		var dataCheckString = "";//initData.toString();
+        // initData.delete('hash');
+        // initData.sort();
+        var dataCheckString = ""; //initData.toString();
 
-		var cafe_api = `${window.location.origin}/customer`;
-		Cafe.init({ "apiUrl": cafe_api, "userId": userId, "initDataHash": initDataHash, "dataCheckString": dataCheckString });
-	</script>
+        var cafe_api = `${window.location.origin}/customer`;
+        Cafe.init({
+            "apiUrl": cafe_api,
+            "userId": userId,
+            "initDataHash": initDataHash,
+            "dataCheckString": dataCheckString
+        });
+    </script>
 </body>
 
 </html>

@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 async def on_create(user_id, order_id):
-
     await bot.send_message(KITCHEN_TG_ID, f"Новый заказ. Id: {order_id}") 
     hidden_order = await HiddenOrder.get(order_id)
     logger.error(hidden_order)

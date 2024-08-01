@@ -7,27 +7,6 @@
   };
 })(jQuery);
 
-function getFormData($form) {
-  var unindexed_array = $form.serializeArray();
-  var indexed_array = {};
-
-  $.map(unindexed_array, function (n, i) {
-    indexed_array[n['name']] = n['value'];
-  });
-
-  return indexed_array;
-}
-
-function resetFormErrors() {
-  $(".input-group").removeClass("error");
-  $(".error-message").remove();
-  $("input").attr("placeholder", ""); // Clear placeholders
-}
-
-$("#main-form :input").on("input change", function () {
-  resetFormErrors();
-});
-
 
 function validateForm($form) {
   $(".input-group").removeClass("error");
@@ -75,8 +54,6 @@ function validateForm($form) {
 
   return !hasError;
 };
-
-
 
 window.Telegram.WebApp.onEvent('invoiceClosed', function (object) {
   if (object.status == 'pending' || object.status == 'paid') {
@@ -286,18 +263,18 @@ var Cafe = {
 
     if (mode_order == 2) {
 
-      var height = $(".cafe-order-overview").height();
+      var height = $(".page--order-overview").height();
       $("body").addClass("payment-mode");
-      $(".cafe-order-overview").css("maxHeight", height).redraw();
-      $(".cafe-payment").show();
+      $(".page--order-overview").css("maxHeight", height).redraw();
+      $(".page--payment").show();
 
     } else if (mode_order == 1) {
 
-      var height = $(".cafe-items").height()// || $(".cafe-order-overview").height();
+      var height = $(".page--items").height()// || $(".page--order-overview").height();
       $("body").removeClass("payment-mode");
 
-      $(".cafe-order-overview").show();
-      if (height) $(".cafe-items").css("maxHeight", height).redraw();
+      $(".page--order-overview").show();
+      if (height) $(".page--items").css("maxHeight", height).redraw();
       $("body").addClass("order-mode");
       $(".js-order-comment-field").each(function () {
         autosize.update(this);
@@ -469,10 +446,10 @@ var Cafe = {
 };
 
 /*!
-    Autosize 3.0.20
-    license: MIT
-    http://www.jacklmoore.com/autosize
-  */
+  Autosize 3.0.20
+  license: MIT
+  http://www.jacklmoore.com/autosize
+*/
 !(function (e, t) {
   if ("function" == typeof define && define.amd)
     define(["exports", "module"], t);
@@ -665,7 +642,7 @@ var Cafe = {
 
 function initRipple() {
   if (!document.querySelectorAll) return;
-  var rippleHandlers = document.querySelectorAll(".ripple-handler");
+  var rippleHandlers = document.querySelectorAll(".button--ripple-handler");
   var redraw = function (el) {
     el.offsetTop + 1;
   };
