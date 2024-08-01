@@ -38,15 +38,15 @@ class HiddenUser:
                 return []
 
 class HiddenOrder:
-    def __init__(self, order: Order):
+    def __init__(self, order: Order, user: HiddenUser = None):
         self.order = order
+        self.user = user
 
     @classmethod
     async def create(cls, items: list[tuple[OrderItem, float]], price: int, user: HiddenUser, comment: Optional[str] = None):
         async with APIClient() as api_client:
-            logger.error(json.dumps(items[0][0].model_dump(mode='json')))
             order_data = OrderCreate(
-                items=[(json.dumps(item[0].model_dump(mode='json')), item[1]) for item in items],  # Convert OrderItem to dict and keep count
+                items=[(cls.item_to_str(item[0]), item[1]) for item in items],  # Convert OrderItem to dict and keep count
                 price=price,
                 user=user.user.id,  # Use the user ID from HiddenUser
                 comment=comment
@@ -60,6 +60,18 @@ class HiddenOrder:
             updated_order = await api_client.update_order(order_id=self.order.id, order_update=order_update)
         self.order = Order.parse_obj(updated_order)
         return self.order
+    
+    @staticmethod
+    def item_to_str(item: OrderItem) -> str:
+        return json.dumps(item.model_dump(mode='json'))
+    
+    @staticmethod
+    def str_to_item(item_str: str) -> OrderItem:
+        logger.error(json.loads(item_str))
+        return OrderItem.parse_obj(json.loads(item_str))
+    
+    def items(self) -> list[tuple[OrderItem, float]]:
+        return [(self.str_to_item(item), count) for item, count in self.order.items]
 
 class HiddenMenu:
     def __init__(self, items: List[OrderItem]):

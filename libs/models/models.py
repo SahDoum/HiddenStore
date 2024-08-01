@@ -32,11 +32,10 @@ class OrderStatus(str, Enum):
 class OrderItem(BaseObject, table=True):
     __tablename__ = "menu"
     item: str
-    amount: Optional[int]
+    amount: Optional[int] = None
     details: Optional[str] = None
     price: int
     unit: str
-
 
 # Define a custom type decorator for handling JSON lists of pairs
 class JSONListOfPairs(TypeDecorator):

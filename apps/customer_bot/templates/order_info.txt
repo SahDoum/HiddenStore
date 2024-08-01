@@ -1,9 +1,9 @@
 Заказ:
-ID: {{ order.id }}
-Цена: {{ order.price }}
 Что внутри: 
-{% for item in order["items"] %} {{ item }} {% endfor %}
-
+{% for item, count in items %} {% with item=item, count=count %}
+{% include "item_info.txt" %}
+{% endwith %}{% endfor %}
+Цена: {{ order.price }}
 Статус: {{ order.status }}
-Комментарий: {{ order.comment }}
-Отзыв: {{ order.review }}
+{% if order.comment %}Комментарий от кухни: {{ order.comment }}{% endif %}
+{% if order.review %}Ваш тзыв: {{ order.review }}{% endif %}

@@ -1,0 +1,2 @@
+<b>{{ item.item }} : {{ count }}{{ item.unit }}</b>
+{% if item.details %}{{ item.details }}{% endif %}
