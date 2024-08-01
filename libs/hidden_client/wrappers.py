@@ -82,6 +82,15 @@ class HiddenOrder:
     def items(self) -> list[tuple[OrderItem, float]]:
         return [(self.str_to_item(item), count) for item, count in self.order.items]
 
+    @classmethod
+    async def list(cls):
+        async with APIClient() as api_client:
+            try:
+                orders = await api_client.get_orders()
+                return [cls(Order.parse_obj(order)) for order in orders]
+            except:
+                return None
+
 class HiddenItem:
     def __init__(self, item: OrderItem):
         self.item = item

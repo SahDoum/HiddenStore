@@ -5,6 +5,9 @@ from init import bot, redis_client
 from config import KITCHEN_TG_ID
 from init import render_template
 
+from keyboards import order_keyboard
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -19,7 +22,9 @@ async def on_create(user_id, order_id):
         return
 
     msg = render_template('order_info.txt', order=hidden_order.order, items=hidden_order.items())
-    await bot.send_message(KITCHEN_TG_ID, msg) 
+    keyboard = order_keyboard(hidden_order.order)
+
+    await bot.send_message(KITCHEN_TG_ID, msg, reply_markup=keyboard) 
 
 
 def register_notifiers():
