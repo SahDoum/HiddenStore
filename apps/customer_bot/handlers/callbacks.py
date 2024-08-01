@@ -13,4 +13,5 @@ async def on_create(user_id):
 
 
 def register_callbacks():
-    redis_client.listen(msg_type="create", callback=on_create)
+    pass
+    # redis_client.listen(msg_type="create", callback=on_create)

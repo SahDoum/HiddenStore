@@ -54,6 +54,15 @@ class HiddenOrder:
             order = await api_client.create_order(order_data=order_data)
         return cls(Order.parse_obj(order))
 
+    @classmethod
+    async def get(cls, order_id: str):
+        async with APIClient() as api_client:
+            try:
+                order = await api_client.get_order_by_id(order_id)
+                return cls(Order.parse_obj(order))
+            except:
+                return None
+
     async def update(self, review: Optional[str] = None, comment: Optional[str] = None, is_delivered: Optional[bool] = None, is_paid: Optional[bool] = None, price: Optional[int] = None, status: Optional[str] = None):
         async with APIClient() as api_client:
             order_update = OrderUpdate(review=review, comment=comment, is_delivered=is_delivered, is_paid=is_paid, price=price, status=status)

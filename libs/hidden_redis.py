@@ -4,6 +4,7 @@ import logging
 import redis.asyncio as redis
 import async_timeout
 
+from libs.models.models import User, Order
 from libs.hidden_client import HiddenUser, HiddenOrder
 
 
@@ -17,12 +18,12 @@ class HiddenRedis:
         self.channel = "order-update"
         self.event_loop = asyncio.get_event_loop()
 
-    async def publish(self, msg_type: str, user: HiddenUser): #, order: HiddenOrder):
+    async def publish(self, msg_type: str, user: User, order: Order): #, order: HiddenOrder):
         # Serialize the message
         message = json.dumps({
             'type': msg_type,
-            'user_id': user.user.id,
-            # 'order_id': order.order.id,
+            'user_id': user.id,
+            'order_id': order.id,
             # 'order': order.order.to_dict()  # assuming HiddenOrder has a to_dict method
         })
         await self.redis_client.publish(self.channel, message)
@@ -57,4 +58,5 @@ class HiddenRedis:
 
     async def _process_callback(self, callback, data):
         user_id = data.get('user_id')
-        await callback(user_id)
+        order_id = data.get('order_id')
+        await callback(user_id, order_id)

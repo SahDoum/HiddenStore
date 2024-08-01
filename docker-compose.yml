@@ -18,6 +18,9 @@ services:
       ]
     ports:
       - "8001:8000"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
 
   customer_bot:
     build:
@@ -25,6 +28,7 @@ services:
     volumes:
       - .:/app
       - ./libs:/app/libs
+      - ./templates:/app/templates
     command: "python apps/customer_bot/bot.py"
     ports:
       - "8002:8000"
@@ -36,14 +40,27 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - SERVER_URL=http://server:8000
-    #
-    # kitchen_bot:
-    #   build:
-    #     context: ./kitchen_bot
-    #   ports:
-    #     - "8003:8000"
-    #   depends_on:
-    #     - server
+
+  kitchen:
+    build:
+      context: ./docker/kitchen
+    volumes:
+      - .:/app
+      - ./libs:/app/libs
+      - ./templates:/app/templates
+    command: "python apps/kitchen/bot.py"
+    ports:
+      - "8003:8000"
+    depends_on:
+      - server
+      - redis
+    environment:
+      - TELEGRAM_TOKEN=${KITCHEN_BOT_TOKEN}
+      - KITCHEN_TG_ID=${KITCHEN_TG_ID}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - SERVER_URL=http://server:8000
+
   adminer:
     image: adminer
     restart: always

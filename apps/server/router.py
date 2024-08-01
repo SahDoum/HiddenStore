@@ -5,6 +5,12 @@ from libs.models import models
 from libs.models import schemas
 from api import UserAPI, OrderAPI, ItemsAPI
 
+# move to other file
+from config import REDIS_HOST, REDIS_PORT
+from libs.hidden_redis import HiddenRedis
+redis_client = HiddenRedis(host=REDIS_HOST, port=REDIS_PORT)
+
+
 app = FastAPI()
 
 @app.post("/users/", response_model=models.User)
@@ -49,7 +55,10 @@ async def delete_user(user_id: str):
 
 @app.post("/orders/", response_model=models.Order)
 async def create_order(order: schemas.OrderCreate):
-    return await OrderAPI.create(data=order)
+    order = await OrderAPI.create(data=order)
+    user = models.User(id=order.id)
+    await redis_client.publish('create', user, order)
+    return order
 
 @app.get("/orders/", response_model=list[models.Order])
 async def get_orders():
@@ -60,6 +69,14 @@ async def get_orders():
 async def get_orders_by_user(user_id: str):
     orders = await OrderAPI.get_by_user(user_id=user_id)
     return orders
+
+
+@app.get("/orders/{order_id}", response_model=models.Order)
+async def get_order_by_id(order_id: str):
+    order = await OrderAPI.get(order_id=order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return order
 
 @app.put("/orders/{order_id}", response_model=models.Order)
 async def update_order(order_id: str, order_update: schemas.OrderUpdate):
@@ -104,3 +121,4 @@ async def delete_menu_item(item_id: str):
     if not success:
         raise HTTPException(status_code=404, detail="Item not found or delete failed")
     return success
+

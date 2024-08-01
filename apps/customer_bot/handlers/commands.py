@@ -67,11 +67,11 @@ async def cmd_menu(message: types.Message):
     else:
         await message.reply(MESSAGES['error_fetching_menu'])
 
-@dp.message_handler(commands='redis')
-async def cmd_redis(message: types.Message):
-    telegram_id = str(message.from_user.id)
-    user = await HiddenUser.get_or_create(telegram_id=telegram_id)
-    await redis_client.publish('create', user)
+# @dp.message_handler(commands='redis')
+# async def cmd_redis(message: types.Message):
+#     telegram_id = str(message.from_user.id)
+#     user = await HiddenUser.get_or_create(telegram_id=telegram_id)
+#     await redis_client.publish('create', user)
 
 @dp.message_handler(commands='create')
 async def cmd_create(message: types.Message):
@@ -105,4 +105,4 @@ def register_handlers():
     dp.register_message_handler(cmd_orders, commands='orders')
     dp.register_message_handler(cmd_menu, commands='menu')
     dp.register_message_handler(cmd_create, commands='create')
-    dp.register_message_handler(cmd_redis, commands='redis')
+    # dp.register_message_handler(cmd_redis, commands='redis')
