@@ -9,7 +9,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "123:123"
     depends_on:
       - webapp
     environment:
@@ -35,6 +34,7 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
     networks:
       - internal
 
@@ -113,7 +113,7 @@ services:
     image: postgres:latest
     restart: always
     environment:
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: db
     volumes:
       - ./database:/var/lib/postgresql
