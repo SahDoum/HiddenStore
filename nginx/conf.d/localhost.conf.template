@@ -1,0 +1,39 @@
+server {
+	listen 80;
+	listen [::]:80;
+
+	# certbot
+	location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name example.org www.example.org;
+    server_tokens off;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+}
+
+server {
+    listen 443 default_server ssl http2;
+    listen [::]:443 ssl http2;	
+
+    ssl_certificate /etc/nginx/ssl/live/${DOMAIN_URL}/fullchain.pem;
+    ssl_certificate_key /etc/nginx/ssl/live/${DOMAIN_URL}/privkey.pem;
+    
+	# adminer
+	location /database/adminer {
+		proxy_pass http://adminer:8080;
+	}
+
+	location / {
+		proxy_pass http://webapp:8000;
+	}
+}

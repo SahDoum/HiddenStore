@@ -1,17 +1,19 @@
 # docker-compose.yml
-version: "3.8"
 services:
   nginx:
     image: nginx:latest
     volumes:
-      - ./nginx/conf.d/:/etc/nginx/conf.d
-      - ./certs:/etc/nginx/certs:ro
+      - ./nginx/conf.d/:/etc/nginx/templates/
+      - ./nginx/certbot/:/var/www/certbot/:ro
+      - ./nginx/certs/:/etc/nginx/ssl/:ro
     ports:
       - "80:80"
       - "443:443"
       - "123:123"
     depends_on:
       - webapp
+    environment:
+      - DOMAIN_URL=${DOMAIN_URL}
     networks:
       - internal
 
@@ -123,6 +125,12 @@ services:
     container_name: redis
     networks:
       - internal
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./nginx/certbot/:/var/www/certbot/:rw
+      - ./nginx/certs/:/etc/letsencrypt/:rw
 
 networks:
   internal:
