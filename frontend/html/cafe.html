@@ -74,7 +74,7 @@
 						<div class="order__item-title">{{ item.item }}
 							<span class="order__item-counter"><span class="js-order-item-counter">1</span>x</span>
 						</div>
-						<div class="order__item-description">{{ item.item }}</div>
+						<div class="order__item-description">{{ item.details }}</div>
 					</div>
 					<div class="order__item-price js-order-item-price">₾{{ item.price }}</div>
 				</div>
@@ -106,22 +106,23 @@
 	<script src="https://tg.dev/js/jquery.min.js"></script>
 	<script src="/static/assets/scripts.min.js"></script>
 	<script>
-		// var userId = 0; //JSON.parse(new URLSearchParams(window.Telegram.WebApp.initData).get('user')).id;
+		var userId = JSON.parse(new URLSearchParams(window.Telegram.WebApp.initData).get('user')).id;
+		let initData = new URLSearchParams(window.Telegram.WebApp.initData);
+		var initDataHash = initData.get('hash');
 
-		// // let initData = new URLSearchParams(window.Telegram.WebApp.initData);
-		// var initDataHash = ""; //initData.get('hash');
+		initData.delete('hash');
+		initData.sort();
+		var dataCheckString = initData.toString();
 
-		// // initData.delete('hash');
-		// // initData.sort();
-		// var dataCheckString = ""; //initData.toString();
+		var cafe_api = `${window.location.origin}/api`;
 
-		// var cafe_api = `${window.location.origin}/customer`;
-		// Cafe.init({
-		// 	"apiUrl": cafe_api,
-		// 	"userId": userId,
-		// 	"initDataHash": initDataHash,
-		// 	"dataCheckString": dataCheckString
-		// });
+		const cafe = new window.Cafe();
+		cafe.init({
+			apiUrl: `${window.location.origin}/api`,
+			userId: userId,
+			initDataHash: initDataHash,
+			dataCheckString: dataCheckString,
+		});
 	</script>
 </body>
 
