@@ -11,14 +11,12 @@
 	align-content: flex-end;
 	transition: max-height var(--page-animation), opacity var(--page-animation);
 	background-color: var(--block-bg-color);
+
+	.page--items:after {
+		content: '';
+		flex-grow: 2;
+	}
 }
-
-
-.page--items:after {
-	content: '';
-	flex-grow: 2;
-}
-
 
 .page--order-overview {
 	display: none;
@@ -29,21 +27,10 @@
 	opacity: 0;
 }
 
-
 .page--payment {
 	display: none;
 	font-family: var(--default-font);
 	background-color: var(--bg-color);
 	transition: opacity var(--page-animation);
 	opacity: 0;
-}
-
-
-.page--buttons {
-	display: flex;
-	width: 80%;
-	justify-content: space-between;
-	margin: 10px auto 0;
-	position: relative;
-	transition: all var(--animation);
 }

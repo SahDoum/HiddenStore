@@ -8,7 +8,8 @@ setupTelegramWebAppEvents();
 initRipple();
 
 // Initialize Cafe with options
-Cafe.init({
+const cafe = new Cafe();
+cafe.init({
 	apiUrl: `${window.location.origin}/customer`,
 	userId: 0, // Replace with actual user ID if available
 	initDataHash: '',

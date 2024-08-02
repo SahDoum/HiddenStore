@@ -15,56 +15,34 @@ body {
 	min-width: 100%;
 
 	--tg-theme-bg-color: $block-bg-color;
-	--animation: $animation;
-	--page-animation-duration: $page-animation-duration;
-	--page-animation: $page-animation;
-	--status-height: $status-height;
-	--accent-color: $accent-color;
-	--main-color: $main-color;
-	--main-color-light: $main-color-light;
-	--text-color: $text-color;
-	--page-hint-color: $page-hint-color;
-	--hint-color: $hint-color;
-	--placeholder-color: $placeholder-color;
-	--ripple-duration: $ripple-duration;
-	--ripple-end-duration: $ripple-end-duration;
 
 	--default-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-	--block-bg-color: var(--tg-theme-bg-color);
+	--block-bg-color: #{$block-bg-color};
 	--bg-color: #ebedf0;
-	--animation: .15s ease;
-	--page-animation-duration: .3s;
-	--page-animation: var(--page-animation-duration) ease;
-	--status-height: 48px;
-	--accent-color: #31b545;
-	--main-color: #f8a917;
-	--main-color-light: #FBD48B;
-	--text-color: #222;
-	--page-hint-color: #83878a;
-	--hint-color: #74787a;
-	--placeholder-color: #999da1;
-	--ripple-duration: .45s;
-	--ripple-end-duration: .3s;
+	--animation: #{$animation};
+	--page-animation-duration: #{$page-animation-duration};
+	--page-animation: #{$page-animation-duration} ease;
+	--status-height: #{$status-height};
+	--accent-color: #{$accent-color};
+	--main-color: #{$main-color};
+	--main-color-light: #{$main-color-light};
+	--text-color: #{$text-color};
+	--page-hint-color: #{$page-hint-color};
+	--hint-color: #{$hint-color};
+	--placeholder-color: #{$placeholder-color};
+	--ripple-duration: #{$ripple-duration};
+	--ripple-end-duration: #{$ripple-end-duration};
 
 	&.dark {
-		--block-bg-color: $block-bg-color;
-		--bg-color: $dark-bg-color;
-		--text-color: $dark-text-color;
-		--page-hint-color: $dark-page-hint-color;
-		--hint-color: $dark-hint-color;
-		--placeholder-color: $dark-placeholder-color;
+		--block-bg-color: #{$block-bg-color};
+		--bg-color: #{$dark-bg-color};
+		--text-color: #{$dark-text-color};
+		--page-hint-color: #{$dark-page-hint-color};
+		--hint-color: #{$dark-hint-color};
+		--placeholder-color: #{$dark-placeholder-color};
 	}
 
-	&.closed .page {
-		filter: grayscale(1) opacity(0.7);
-	}
 
-	&.loading .loading-icon {
-		transition-delay: 0.4s;
-		transform: scale(1);
-		visibility: visible;
-		opacity: 1;
-	}
 }
 
 * {
