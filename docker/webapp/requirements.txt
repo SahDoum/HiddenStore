@@ -1,0 +1,11 @@
+fastapi 
+uvicorn
+pydantic 
+sqlalchemy 
+alembic 
+sqlmodel 
+asyncpg 
+httpx 
+jinja2
+redis~=5.0.1
+aiohttp==3.8.1

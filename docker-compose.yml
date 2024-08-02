@@ -1,6 +1,20 @@
 # docker-compose.yml
 version: "3.8"
 services:
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d
+      - ./certs:/etc/nginx/certs:ro
+    ports:
+      - "80:80"
+      - "443:443"
+      - "123:123"
+    depends_on:
+      - webapp
+    networks:
+      - internal
+
   server:
     build:
       context: ./docker/server
@@ -16,11 +30,11 @@ services:
         "--port",
         "8000"
       ]
-    ports:
-      - "8001:8000"
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+    networks:
+      - internal
 
   customer_bot:
     build:
@@ -30,8 +44,6 @@ services:
       - ./libs:/app/libs
       - ./templates:/app/templates
     command: "python apps/customer_bot/bot.py"
-    ports:
-      - "8002:8000"
     depends_on:
       - server
       - redis
@@ -40,6 +52,8 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - SERVER_URL=http://server:8000
+    networks:
+      - internal
 
   kitchen:
     build:
@@ -49,8 +63,6 @@ services:
       - ./libs:/app/libs
       - ./templates:/app/templates
     command: "python apps/kitchen/bot.py"
-    ports:
-      - "8003:8000"
     depends_on:
       - server
       - redis
@@ -60,6 +72,8 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - SERVER_URL=http://server:8000
+    networks:
+      - internal
 
   webapp:
     build:
@@ -77,19 +91,21 @@ services:
         "--port",
         "8000"
       ]
-    ports:
-      - "8004:8000"
     environment:
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - SERVER_URL=http://server:8000
+    networks:
+      - internal
 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8080:8080
+    networks:
+      - internal
 
   db:
     image: postgres:latest
@@ -97,13 +113,17 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: db
-    ports:
-      - 5432:5432
     volumes:
       - ./database:/var/lib/postgresql
+    networks:
+      - internal
 
   redis:
     image: "redis:alpine"
     container_name: redis
-    ports:
-      - "6379:6379"
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge

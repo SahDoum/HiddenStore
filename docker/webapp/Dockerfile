@@ -1,4 +1,5 @@
 # server/Dockerfile
 FROM python:3.9-slim
 WORKDIR /app
-RUN pip install fastapi uvicorn pydantic sqlalchemy alembic sqlmodel asyncpg
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
