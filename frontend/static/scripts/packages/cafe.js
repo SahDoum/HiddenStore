@@ -166,13 +166,13 @@ class Cafe {
 				orderData[id] = count;
 			}
 		});
-		return JSON.stringify(orderData);
+		return orderData;
 	}
 
 	order() {
 		const comment = $(".js-order-comment-field").val();
 		const params = {
-			order_data: this.getOrderData(),
+			items: this.getOrderData(),
 			comment,
 			price: this.totalPrice
 		};

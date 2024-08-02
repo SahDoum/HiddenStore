@@ -1,37 +1,44 @@
 export class ApiManager {
 	constructor(apiUrl, userId, initDataHash, dataCheckString) {
 		this.apiUrl = apiUrl;
-		this.userId = userId;
+		this.userId = `${userId}`;
 		this.initDataHash = initDataHash;
 		this.dataCheckString = dataCheckString;
 	}
 
-	request(method, data, onCallback) {
+	async request(method, data, onCallback) {
 		const authData = Telegram.WebApp.initData || "";
 		const apiUrl = `${this.apiUrl}/${method}`;
-		let userId = 155493213;
-		if (this.userId) userId = this.userId;
+
 		console.log(apiUrl);
-		$.ajax(apiUrl, {
-			type: "POST",
-			data: {
-				...data,
-				_auth: authData,
-				method,
-				user_id: userId,
-				initDataHash: this.initDataHash,
-				dataCheckString: this.dataCheckString,
-			},
-			dataType: "json",
-			xhrFields: {
-				withCredentials: true,
-			},
-			success: (result) => {
+		console.log(data);
+
+		try {
+			const response = await fetch(apiUrl, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"X-Requested-With": "XMLHttpRequest"
+				},
+				credentials: "include",
+				body: JSON.stringify({
+					...data,
+					_auth: authData,
+					user_id: this.userId,
+					initDataHash: this.initDataHash,
+					dataCheckString: this.dataCheckString,
+				})
+			});
+
+			const result = await response.json();
+
+			if (response.ok) {
 				onCallback && onCallback(result);
-			},
-			error: (xhr) => {
-				onCallback && onCallback({ error: "При заказе случилась ошибка. Попробуйте еще раз чуть позже." });
-			},
-		});
+			} else {
+				onCallback && onCallback({ error: "An error occurred while placing the order. Please try again later." });
+			}
+		} catch (error) {
+			onCallback && onCallback({ error: "An error occurred while placing the order. Please try again later." });
+		}
 	}
 }
