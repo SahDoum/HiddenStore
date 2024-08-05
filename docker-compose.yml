@@ -113,7 +113,7 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: db
     volumes:
-      - ./database:/var/lib/postgresql
+      - database:/var/lib/postgresql/data
     networks:
       - internal
 
@@ -134,4 +134,4 @@ networks:
     driver: bridge
 
 volumes:
-  db_data:
+  database:
