@@ -44,6 +44,7 @@ services:
       - redis
     environment:
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+      - DOMAIN_URL=${DOMAIN_URL}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - SERVER_URL=http://server:8000
