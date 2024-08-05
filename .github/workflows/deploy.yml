@@ -1,0 +1,28 @@
+name: "HiddenStore CI"
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Run command on remote server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{secrets.SSH_HOST}}
+          username: ${{secrets.SSH_USER}}
+          key: ${{secrets.SSH_PRIVATE_KEY}}
+          script: |
+            cd ${{ secrets.PROJECT_FOLDER }};
+            git checkout master;
+            git fetch --all;
+            # git branch backup-master;
+            git reset --hard origin/master;
+            docker-compose down;
+            docker-compose up -d;
+            docker system prune --all --force;
