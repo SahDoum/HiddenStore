@@ -24,7 +24,7 @@ jobs:
             git fetch --all;
             # git branch backup-master;
             git reset --hard origin/master;
-            docker system prune --all --force;
+            docker system prune;
             docker-compose down;
             docker-compose build;
             docker-compose up -d;
