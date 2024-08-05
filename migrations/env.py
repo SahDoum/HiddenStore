@@ -1,9 +1,11 @@
+import os
 import asyncio
 from logging.config import fileConfig
 
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy.ext.asyncio import create_async_engine
+
 
 from alembic import context
 
@@ -32,6 +34,10 @@ target_metadata = SQLModel.metadata
 # ... etc.
 
 
+DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD")
+DATABASE_URL = f"postgresql+asyncpg://postgres:{DATABASE_PASSWORD}@db/db"
+
+
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -44,9 +50,8 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=url,
+        url=DATABASE_URL,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -68,12 +73,13 @@ async def run_async_migrations() -> None:
     and associate a connection with the context.
 
     """
+    connectable = create_async_engine(DATABASE_URL, future=True)
 
-    connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    # connectable = async_engine_from_config(
+    #     config.get_section(config.config_ini_section, {}),
+    #     prefix="sqlalchemy.",
+    #     poolclass=pool.NullPool,
+    # )
 
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
