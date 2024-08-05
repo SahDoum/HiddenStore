@@ -19,6 +19,7 @@ jobs:
           key: ${{secrets.SSH_PRIVATE_KEY}}
           script: |
             cd ${{ secrets.PROJECT_FOLDER }};
+            echo "${{ secrets.ENV_FILE_CONTENT }}" > .env;
             git checkout master;
             git fetch --all;
             # git branch backup-master;
