@@ -1,9 +1,11 @@
 Заказ:
+
+{% if user %}Кто заказал:{% with user=user %}{% include "user_name.txt" %}{% endwith %}{% endif %}
 Что внутри: 
 {% for item, count in items %} {% with item=item, count=count %}
 {% include "item_info.txt" %}
 {% endwith %}{% endfor %}
 Цена: {{ order.price }}
-Статус: {{ order.status }}
+Статус: {{ order.status.name }}
 {% if order.comment %}Комментарий от кухни: {{ order.comment }}{% endif %}
 {% if order.review %}Ваш тзыв: {{ order.review }}{% endif %}

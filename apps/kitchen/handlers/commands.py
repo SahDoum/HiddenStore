@@ -14,11 +14,11 @@ async def cmd_orders(message: types.Message):
     orders = await HiddenOrder.list()
     if orders is not None:
         for hidden_order in orders:
-            msg = render_template('order_info.txt', order=hidden_order.order, items=hidden_order.items())
+            hidden_user = await HiddenUser.get_or_create(id=hidden_order.order.user)
+            msg = render_template('order_info.txt', order=hidden_order.order, items=hidden_order.items(), user=hidden_user.user)
             keyboard = order_keyboard(hidden_order.order)
             await message.reply(msg, reply_markup=keyboard)
-            return
-
+        return
     await message.reply("Нет заказов")
 
 def register_handlers():
