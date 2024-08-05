@@ -2,10 +2,16 @@
 from sqlmodel import select
 from typing import Optional, Any
 from libs.models.models import User, Order, OrderItem
-from libs.models.schemas import UserCreate, UserUpdate, OrderCreate, OrderUpdate, OrderItemCreate, OrderItemUpdate
-from db_config import get_session
+from libs.models.schemas import (
+    UserCreate,
+    UserUpdate,
+    OrderCreate,
+    OrderUpdate,
+    OrderItemCreate,
+    OrderItemUpdate,
+)
+from .db_config import get_session
 import datetime
-import json
 
 
 class UserAPI:
@@ -26,7 +32,9 @@ class UserAPI:
     @staticmethod
     async def get_by_telegram_id(telegram_id: str) -> Optional[User]:
         async with await get_session() as session:
-            result = await session.execute(select(User).where(User.telegram_id == telegram_id))
+            result = await session.execute(
+                select(User).where(User.telegram_id == telegram_id)
+            )
             return result.scalar_one_or_none()
 
     @staticmethod
@@ -59,11 +67,14 @@ class UserAPI:
                 return True
             return False
 
+
 class OrderAPI:
     @staticmethod
     async def create(data: OrderCreate) -> Order:
         async with await get_session() as session:
-            order = Order(items=data.items, price=data.price, user=data.user, comment=data.comment)
+            order = Order(
+                items=data.items, price=data.price, user=data.user, comment=data.comment
+            )
             session.add(order)
             await session.commit()
             await session.refresh(order)
@@ -117,13 +128,19 @@ class OrderAPI:
                 await session.commit()
                 return True
             return False
-        
+
 
 class ItemsAPI:
     @staticmethod
     async def create(data: OrderItemCreate) -> OrderItem:
         async with await get_session() as session:
-            item = OrderItem(item=data.item, amount=data.amount, details=data.details, price=data.price, unit=data.unit)
+            item = OrderItem(
+                item=data.item,
+                amount=data.amount,
+                details=data.details,
+                price=data.price,
+                unit=data.unit,
+            )
             session.add(item)
             await session.commit()
             await session.refresh(item)

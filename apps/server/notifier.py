@@ -1,14 +1,14 @@
-from api import UserAPI, OrderAPI
+from .api import UserAPI, OrderAPI
 from libs.models import models
 
-from config import REDIS_HOST, REDIS_PORT
+from .config import REDIS_HOST, REDIS_PORT
 from libs.hidden_redis import HiddenRedis
 
 
 redis_client = HiddenRedis(host=REDIS_HOST, port=REDIS_PORT)
 
 
-async def notify(notify_type: str, user_id = None, order_id = None):
+async def notify(notify_type: str, user_id=None, order_id=None):
     user = None
     order = None
     if user_id:

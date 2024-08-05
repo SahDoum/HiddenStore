@@ -17,20 +17,15 @@ services:
       - internal
 
   server:
+    command: /bin/bash -c "chmod +x ./docker/server/entrypoint.sh && ./docker/server/entrypoint.sh"
     build:
       context: ./docker/server
+      dockerfile: Dockerfile
     volumes:
-      - ./apps/server/:/app
-      - ./libs:/app/libs
-    command:
-      [
-        "uvicorn",
-        "router:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "8000"
-      ]
+      - .:/app
+    depends_on:
+      - db
+      - redis
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -43,8 +38,6 @@ services:
       context: ./docker/customer_bot
     volumes:
       - .:/app
-      - ./libs:/app/libs
-      - ./templates:/app/templates
     command: "python apps/customer_bot/bot.py"
     depends_on:
       - server
@@ -62,8 +55,6 @@ services:
       context: ./docker/kitchen
     volumes:
       - .:/app
-      - ./libs:/app/libs
-      - ./templates:/app/templates
     command: "python apps/kitchen/bot.py"
     depends_on:
       - server
@@ -93,6 +84,9 @@ services:
         "--port",
         "8000"
       ]
+    depends_on:
+      - server
+      - nginx
     environment:
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
       - REDIS_HOST=redis
@@ -104,6 +98,8 @@ services:
   adminer:
     image: adminer
     restart: always
+    depends_on:
+      - db
     ports:
       - 8080:8080
     networks:
