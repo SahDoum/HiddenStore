@@ -86,7 +86,6 @@ services:
       ]
     depends_on:
       - server
-      - nginx
     environment:
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
       - REDIS_HOST=redis
