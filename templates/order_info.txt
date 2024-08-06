@@ -1,11 +1,8 @@
-Заказ:
-
-{% if user %}Кто заказал:{% with user=user %}{% include "user_name.txt" %}{% endwith %}{% endif %}
-Что внутри: 
-{% for item, count in items %} {% with item=item, count=count %}
-{% include "item_info.txt" %}
+Заказ {% if user %}({% with user=user %}{% include "user_name.txt" %}{% endwith %}){% endif %}
+Состав:
+{% for item, count in items %}-{% with item=item, count=count %}{% include "item_info.txt" %}
 {% endwith %}{% endfor %}
-Цена: {{ order.price }}
-Статус: {{ order.status.name }}
+Цена: {{ order.price }} GEL
+Статус: {{ order.status.value }}
 {% if order.comment %}Комментарий от кухни: {{ order.comment }}{% endif %}
-{% if order.review %}Ваш тзыв: {{ order.review }}{% endif %}
+{% if order.review %}Ваш отзыв: {{ order.review }}{% endif %}

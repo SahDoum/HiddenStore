@@ -1,1 +1,1 @@
- tg://user?id={{ user.telegram_id }}
+ <a href='tg://user?id={{ user.telegram_id }}'>{{ user.name }}</a>

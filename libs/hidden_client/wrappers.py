@@ -54,7 +54,7 @@ class HiddenUser:
 
 
 class HiddenOrder:
-    def __init__(self, order: Order, user: HiddenUser = None):
+    def __init__(self, order: Order, user: Optional[HiddenUser] = None):
         self.order = order
         self.user = user
 

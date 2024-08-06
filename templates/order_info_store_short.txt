@@ -1,0 +1,3 @@
+{% if user %}{% with user=user %}{% include "user_name.txt" %}{% endwith %}{% endif %} / {{ order.price }}GEL / {{ order.status.value }}
+{% for item, count in items %} {% with item=item, count=count %}{% include "item_info_short.txt" %}
+{% endwith %}{% endfor %}
