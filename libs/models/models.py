@@ -1,22 +1,36 @@
-import uuid
-from sqlmodel import SQLModel, Field, Column, JSON
 from typing import Optional
-import datetime
-# from pydantic import BaseModel
-
+import uuid
 import json
+import datetime
+
+from sqlmodel import SQLModel, Field, Column, JSON
 from sqlalchemy import TypeDecorator, VARCHAR
 
 from .statuses import OrderStatus
 
+
+# Ccustom type decorator for handling JSON lists of pairs
+class JSONListOfPairs(TypeDecorator):
+    impl = VARCHAR
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return None
+        return json.dumps(value)
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return None
+        return json.loads(value)
+
+
 # rewrite in pydantic
 # without sqlmodel
-
-
 class BaseObject(SQLModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
     timestamp_created: datetime.datetime = Field(default_factory=datetime.datetime.now)
     timestamp_updated: datetime.datetime = Field(default_factory=datetime.datetime.now)
+
 
 class User(BaseObject, table=True):
     __tablename__ = "users"
@@ -33,25 +47,12 @@ class OrderItem(BaseObject, table=True):
     unit: str
     image: str = "default.png"
 
-# Define a custom type decorator for handling JSON lists of pairs
-class JSONListOfPairs(TypeDecorator):
-    impl = VARCHAR
-
-    def process_bind_param(self, value, dialect):
-        if value is None:
-            return None
-        # Convert list of pairs to JSON string
-        return json.dumps(value)
-
-    def process_result_value(self, value, dialect):
-        if value is None:
-            return None
-        # Convert JSON string back to list of pairs
-        return json.loads(value)
 
 class Order(BaseObject, table=True):
     __tablename__ = "orders"
-    items: list[tuple[str, float]] = Field(default=[], sa_column=Column(JSONListOfPairs))  # List of pairs (OrderItem ID, amount)
+    items: list[tuple[str, float]] = Field(
+        default=[], sa_column=Column(JSONListOfPairs)
+    )  # List of pairs (OrderItem ID, amount)
     price: int
     status: OrderStatus = Field(default=OrderStatus.CREATED)
     comment: Optional[str] = None

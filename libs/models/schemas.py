@@ -3,19 +3,23 @@ from typing import Optional
 
 from .statuses import OrderStatus
 
+
 class UserCreate(BaseModel):
     name: str
     telegram_id: str
 
+
 class UserUpdate(BaseModel):
     name: Optional[str] = None
     telegram_id: Optional[str] = None
+
 
 class OrderCreate(BaseModel):
     items: list[tuple[str, float]]
     price: int
     user: str
     comment: Optional[str] = None
+
 
 class OrderUpdate(BaseModel):
     review: Optional[str] = None
@@ -25,12 +29,14 @@ class OrderUpdate(BaseModel):
     price: Optional[int] = None
     status: Optional[OrderStatus] = None
 
+
 class OrderItemCreate(BaseModel):
     item: str
     amount: Optional[int] = None
     details: Optional[str] = None
     price: int
     unit: str
+
 
 class OrderItemUpdate(BaseModel):
     item: Optional[str] = None

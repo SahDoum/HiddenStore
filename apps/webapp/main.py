@@ -1,5 +1,3 @@
-import json
-import os
 import logging
 
 from fastapi import FastAPI, HTTPException
@@ -8,13 +6,17 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
 
-import sys
-sys.path.append(os.path.abspath('.'))
 from libs.hidden_client import APIConfig
-from libs.hidden_client import HiddenUser, HiddenOrder, HiddenMenu, HiddenItem, OrderItem
+from libs.hidden_client import (
+    HiddenUser,
+    HiddenOrder,
+    HiddenMenu,
+    HiddenItem,
+    OrderItem,
+)
 
 from config import SERVER_URL
-from models import OrderData, RequestData
+from models import OrderData
 from common import is_valid_data, make_items
 
 
@@ -34,7 +36,9 @@ app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     menu = await HiddenMenu.get_items()
-    return templates.TemplateResponse("cafe.html", {"request": request, "items": menu.items()})
+    return templates.TemplateResponse(
+        "cafe.html", {"request": request, "items": menu.items()}
+    )
 
 
 @app.post("/api/order")
@@ -46,15 +50,15 @@ async def order(request: OrderData):
         if not is_valid_data(request):
             logger.error("Invalid data")
             raise HTTPException(status_code=400, detail="Invalid data")
-    
+
         logger.error("/api/order here")
         price = request.price
-        
+
         user = await HiddenUser.get_or_create(telegram_id=request.user_id)
         items = await make_items(request.items)
 
-        order = await HiddenOrder.create(items, price, user)
+        hidden_order = await HiddenOrder.create(items, price, user)
         logger.error("Order created")
-        return order    
+        return hidden_order
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

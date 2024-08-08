@@ -1,8 +1,8 @@
 import logging
 from aiogram import types
-from init import dp
+
+
 from templates.messages import MESSAGES
-from init import render_template
 from libs.hidden_client import (
     HiddenUser,
     HiddenOrder,
@@ -11,7 +11,11 @@ from libs.hidden_client import (
     OrderItem,
 )
 
+
+from init import dp
+from init import render_template
 from keyboards import menu_keyboard, start_keyboard
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

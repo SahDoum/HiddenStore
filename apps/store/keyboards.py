@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from libs.models.models import Order
 
 from config import ORDERS_PER_PAGE
-from apps.kitchen.utils import get_orders_page
+from utils import get_orders_page
 
 
 def order_keyboard(order: Order) -> InlineKeyboardMarkup:

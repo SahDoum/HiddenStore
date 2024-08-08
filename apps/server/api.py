@@ -1,6 +1,8 @@
 # server/api.py
+from typing import Optional
+import datetime
 from sqlmodel import select
-from typing import Optional, Any
+
 from libs.models.models import User, Order, OrderItem
 from libs.models.schemas import (
     UserCreate,
@@ -10,8 +12,8 @@ from libs.models.schemas import (
     OrderItemCreate,
     OrderItemUpdate,
 )
-from .db_config import get_session
-import datetime
+
+from db_config import get_session
 
 
 class UserAPI:

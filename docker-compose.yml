@@ -1,28 +1,14 @@
 # docker-compose.yml
 services:
-  nginx:
-    image: nginx:latest
-    volumes:
-      - ./nginx/conf.d/:/etc/nginx/templates/
-      - ./nginx/certbot/:/var/www/certbot/:ro
-      - ./nginx/certs/:/etc/nginx/ssl/:ro
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - webapp
-    environment:
-      - DOMAIN_URL=${DOMAIN_URL}
-    networks:
-      - internal
-
   server:
-    command: /bin/bash -c "chmod +x ./docker/server/entrypoint.sh && ./docker/server/entrypoint.sh"
+    command: /bin/bash -c "chmod +x ./docker/entrypoint.sh && ./docker/entrypoint.sh"
     build:
       context: ./docker/server
       dockerfile: Dockerfile
     volumes:
-      - .:/app
+      - ./apps/server:/app
+      - ./libs:/app/libs
+      - ./docker/server:/app/docker
     depends_on:
       - db
       - redis
@@ -34,12 +20,14 @@ services:
     networks:
       - internal
 
-  customer_bot:
+  bot:
     build:
-      context: ./docker/customer_bot
+      context: ./docker/bot
     volumes:
-      - .:/app
-    command: "python apps/customer_bot/bot.py"
+      - ./apps/bot:/app
+      - ./libs:/app/libs
+      - ./templates:/app/templates
+    command: "python bot.py"
     depends_on:
       - server
       - redis
@@ -52,12 +40,14 @@ services:
     networks:
       - internal
 
-  kitchen:
+  store:
     build:
-      context: ./docker/kitchen
+      context: ./docker/store
     volumes:
-      - .:/app
-    command: "python apps/kitchen/bot.py"
+      - ./apps/store:/app
+      - ./libs:/app/libs
+      - ./templates:/app/templates
+    command: "python bot.py"
     depends_on:
       - server
       - redis
@@ -74,7 +64,7 @@ services:
     build:
       context: ./docker/webapp
     volumes:
-      - ./apps/webapp/:/app
+      - ./apps/webapp:/app
       - ./libs:/app/libs
       - ./frontend:/app/frontend
     command:
@@ -96,13 +86,17 @@ services:
     networks:
       - internal
 
-  adminer:
-    image: adminer
-    restart: always
-    depends_on:
-      - db
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/templates/
+      - ./nginx/certbot/:/var/www/certbot/:ro
+      - ./nginx/certs/:/etc/nginx/ssl/:ro
     ports:
-      - 8080:8080
+      - "80:80"
+      - "443:443"
+    environment:
+      - DOMAIN_URL=${DOMAIN_URL}
     networks:
       - internal
 
@@ -114,6 +108,16 @@ services:
       POSTGRES_DB: db
     volumes:
       - database:/var/lib/postgresql/data
+    networks:
+      - internal
+
+  adminer:
+    image: adminer
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 8080:8080
     networks:
       - internal
 

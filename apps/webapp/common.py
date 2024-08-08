@@ -1,27 +1,37 @@
 import hmac
 from urllib.parse import unquote
 from hashlib import sha256
-
 from fastapi import HTTPException
 
-from config import TOKEN
 from models import RequestData
-from libs.hidden_client import HiddenUser, HiddenOrder, HiddenMenu, HiddenItem, OrderItem
+from libs.hidden_client import (
+    HiddenUser,
+    HiddenOrder,
+    HiddenMenu,
+    HiddenItem,
+    OrderItem,
+)
+
+from config import TOKEN
 
 
-secret_key = hmac.new(b'WebAppData', bytes(TOKEN, encoding='utf-8'), sha256).digest()
+secret_key = hmac.new(b"WebAppData", bytes(TOKEN, encoding="utf-8"), sha256).digest()
+
 
 def is_valid_data(request: RequestData) -> bool:
     if request.dataCheckString == "" or request.initDataHash == "":
         return False
 
-    data_check_string_unquote = unquote(request.dataCheckString.replace('&', '\n'))
-    hash = hmac.new(secret_key, bytes(data_check_string_unquote, encoding='utf-8'), sha256).hexdigest()
+    data_check_string_unquote = unquote(request.dataCheckString.replace("&", "\n"))
+    tg_hash = hmac.new(
+        secret_key, bytes(data_check_string_unquote, encoding="utf-8"), sha256
+    ).hexdigest()
 
-    if hash == request.initDataHash:
+    if tg_hash == request.initDataHash:
         return True
     else:
         return False
+
 
 async def make_items(items: dict[str, float]) -> list[tuple[OrderItem, float]]:
     res: list[tuple[OrderItem, float]] = []
@@ -32,5 +42,5 @@ async def make_items(items: dict[str, float]) -> list[tuple[OrderItem, float]]:
                 raise HTTPException(status_code=400, detail=f"Item {item_id} not found")
             res.append((hidden_item.item, count))
         except Exception as e:
-            raise
+            raise e
     return res

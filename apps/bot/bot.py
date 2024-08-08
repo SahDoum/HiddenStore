@@ -1,9 +1,10 @@
 from aiogram.utils import executor
-from init import dp
-from apps.kitchen.handlers.notifiers import register_notifiers
-import handlers.callbacks
-import handlers.commands
 
+
+from init import dp
+from handlers.notifiers import register_notifiers
+import handlers.commands
+import handlers.callbacks
 
 if __name__ == "__main__":
     register_notifiers()
