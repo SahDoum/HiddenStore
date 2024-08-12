@@ -6,7 +6,7 @@ import datetime
 from sqlmodel import SQLModel, Field, Column, JSON
 from sqlalchemy import TypeDecorator, VARCHAR
 
-from .statuses import OrderStatus
+from .statuses import OrderStatus, PaymentStatus
 
 
 # Ccustom type decorator for handling JSON lists of pairs
@@ -48,15 +48,30 @@ class OrderItem(BaseObject, table=True):
     image: str = "default.png"
 
 
+class PickupPoint(BaseObject, table=True):
+    adress: Optional[str] = None
+    description: Optional[str] = None
+
+
 class Order(BaseObject, table=True):
     __tablename__ = "orders"
+
+    # Common
+    status: OrderStatus = Field(default=OrderStatus.CREATED)
+    user: str = Field(default=None, foreign_key="users.id")
+
+    # On create
     items: list[tuple[str, float]] = Field(
         default=[], sa_column=Column(JSONListOfPairs)
-    )  # List of pairs (OrderItem ID, amount)
+    )
     price: int
-    status: OrderStatus = Field(default=OrderStatus.CREATED)
     comment: Optional[str] = None
+    is_paid: bool = Field(default=False)
+    payment: PaymentStatus = Field(default=PaymentStatus.NONE)
+
+    # On delivery
+    details: Optional[str] = None
+
+    # On finish
     review: Optional[str] = None
     is_delivered: bool = Field(default=False)
-    is_paid: bool = Field(default=False)
-    user: str = Field(default=None, foreign_key="users.id")
