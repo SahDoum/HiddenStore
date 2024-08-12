@@ -1,5 +1,7 @@
 import logging
+
 from aiogram import types
+from aiogram.filters import Command
 
 
 from templates.messages import MESSAGES
@@ -21,7 +23,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-@dp.message_handler(commands="start")
+@dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     telegram_id = str(message.from_user.id)
     username = None
@@ -34,9 +36,10 @@ async def cmd_start(message: types.Message):
     await message.reply(MESSAGES["start"], reply_markup=start_keyboard())
 
 
-@dp.message_handler(commands="about")
+@dp.message(Command("about"))
 async def cmd_about(message: types.Message):
     telegram_id = str(message.from_user.id)
+    logger.error(telegram_id)
     user = await HiddenUser.get_or_create(telegram_id=telegram_id)
     if not user:
         await message.reply(MESSAGES["error_fetching_user"])
@@ -45,7 +48,7 @@ async def cmd_about(message: types.Message):
     await message.reply(msg)
 
 
-@dp.message_handler(commands="order")
+@dp.message(Command("order"))
 async def cmd_order(message: types.Message):
     telegram_id = str(message.from_user.id)
     user = await HiddenUser.get_or_create(telegram_id=telegram_id)
@@ -64,7 +67,7 @@ async def cmd_order(message: types.Message):
     await message.reply(MESSAGES["order_success"].format(order_id=order.order.id))
 
 
-@dp.message_handler(commands="orders")
+@dp.message(Command("orders"))
 async def cmd_orders(message: types.Message):
     telegram_id = str(message.from_user.id)
     user = await HiddenUser.get_or_create(telegram_id=telegram_id)
@@ -85,7 +88,7 @@ async def cmd_orders(message: types.Message):
     await message.reply(MESSAGES["error_orders"])
 
 
-@dp.message_handler(commands="menu")
+@dp.message(Command("menu"))
 async def cmd_menu(message: types.Message):
     menu = await HiddenMenu.get_items()
     if len(menu.hidden_items) > 0:
@@ -97,7 +100,7 @@ async def cmd_menu(message: types.Message):
         await message.reply(MESSAGES["error_fetching_menu"])
 
 
-@dp.message_handler(commands="create")
+@dp.message(Command("create"))
 async def cmd_create(message: types.Message):
     try:
         # Parse command arguments
@@ -123,10 +126,16 @@ async def cmd_create(message: types.Message):
         await message.reply(f"An error occurred: {e}")
 
 
-def register_handlers():
-    dp.register_message_handler(cmd_start, commands="start")
-    dp.register_message_handler(cmd_about, commands="about")
-    dp.register_message_handler(cmd_order, commands="order")
-    dp.register_message_handler(cmd_orders, commands="orders")
-    dp.register_message_handler(cmd_menu, commands="menu")
-    dp.register_message_handler(cmd_create, commands="create")
+logger.info("Commands registered")
+
+
+# def register_handlers():
+#     pass
+
+
+#     dp.register_message(cmd_start, commands="start")
+#     dp.register_message(cmd_about, commands="about")
+#     dp.register_message(cmd_order, commands="order")
+#     dp.register_message(cmd_orders, commands="orders")
+#     dp.register_message(cmd_menu, commands="menu")
+#     dp.register_message(cmd_create, commands="create")

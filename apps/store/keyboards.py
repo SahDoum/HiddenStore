@@ -1,59 +1,63 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 from libs.models.models import Order
 
 from config import ORDERS_PER_PAGE
 from utils import get_orders_page
 
+from data import OrderCallback, PageCallback
 
-def order_keyboard(order: Order) -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup()
 
-    button = InlineKeyboardButton(
-        text="Отгрузил, пусть приходит ->", callback_data=f"order-packed_{order.id}"
+def order_keyboard(order: Order):
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        "Отгрузил, пусть приходит ->",
+        callback_data=OrderCallback(order_id=order.id, action="packed"),
     )
-    keyboard.add(button)
 
-    return keyboard
+    return builder.as_markup()
 
 
-def orders_pagination_keyboard(orders: list, page: int) -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup()
+def orders_pagination_keyboard(orders: list, page: int):
+    builder = InlineKeyboardBuilder()
     orders_page = get_orders_page(orders, page)
 
     for hidden_order in orders_page:
-        keyboard.add(
-            InlineKeyboardButton(
-                hidden_order.order.id,
-                callback_data=f"order-show_{hidden_order.order.id}",
-            )
+        builder.button(
+            text=hidden_order.order.id,
+            callback_data=OrderCallback(order_id=hidden_order.order.id, action="show"),
         )
 
-    navigation_buttons = []
+    navigation_builder = InlineKeyboardBuilder()
     if page > 0:
-        navigation_buttons.append(
-            InlineKeyboardButton("<< Previous", callback_data=f"page_{page - 1}")
+        navigation_builder.button(
+            text="<< Previous", callback_data=PageCallback(page=page - 1)
         )
     if (page + 1) * ORDERS_PER_PAGE < len(orders):  # edit
-        navigation_buttons.append(
-            InlineKeyboardButton("Next >>", callback_data=f"page_{page + 1}")
+        navigation_builder.button(
+            text="Next >>", callback_data=PageCallback(page=page + 1)
         )
 
-    if navigation_buttons:
-        keyboard.row(*navigation_buttons)
+    builder.attach(navigation_builder)
 
-    return keyboard
+    return builder.as_markup()
 
 
-def order_edit_keyboard(order: Order) -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup()
+def order_edit_keyboard(order: Order):
+    builder = InlineKeyboardBuilder()
 
-    keyboard.add(
-        InlineKeyboardButton(text="Отгрузил", callback_data=f"order-packed_{order.id}"),
-        InlineKeyboardButton(text="Удалить", callback_data=f"order_delete_{order.id}"),
-        InlineKeyboardButton(
-            text="Открыть чат", callback_data=f"order-support_{order.id}"
-        ),
-        InlineKeyboardButton(text="<< К списку заказов", callback_data=f"page_0"),
+    builder.button(
+        text="Отгрузил", callback_data=OrderCallback(order_id=order.id, action="packed")
     )
+    builder.button(
+        text="Удалить", callback_data=OrderCallback(order_id=order.id, action="delete")
+    )
+    builder.button(
+        text="Открыть чат",
+        callback_data=OrderCallback(order_id=order.id, action="suport"),
+    )
+    builder.button(text="<< К списку заказов", callback_data=PageCallback(page=0))
 
-    return keyboard
+    builder.adjust(3, 1)
+
+    return builder.as_markup()

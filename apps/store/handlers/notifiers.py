@@ -13,18 +13,20 @@ logger = logging.getLogger(__name__)
 
 
 async def on_create(user_id, order_id):
-    await bot.send_message(KITCHEN_TG_ID, f"Новый заказ. Id: {order_id}") 
+    await bot.send_message(KITCHEN_TG_ID, f"Новый заказ. Id: {order_id}")
     hidden_order = await HiddenOrder.get(order_id)
     logger.error(hidden_order)
     if hidden_order is None:
-        await bot.send_message(KITCHEN_TG_ID, "заказ не сфетчился") 
+        await bot.send_message(KITCHEN_TG_ID, "заказ не сфетчился")
         return
 
-    msg = render_template('order_info.txt', order=hidden_order.order, items=hidden_order.items())
+    msg = render_template(
+        "order_info.txt", order=hidden_order.order, items=hidden_order.items()
+    )
     keyboard = order_keyboard(hidden_order.order)
 
-    await bot.send_message(KITCHEN_TG_ID, msg, reply_markup=keyboard) 
+    await bot.send_message(KITCHEN_TG_ID, msg, reply_markup=keyboard)
 
 
-def register_notifiers():
+async def register_notifiers():
     redis_client.listen(msg_type="create", callback=on_create)

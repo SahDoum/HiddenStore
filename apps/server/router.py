@@ -1,4 +1,5 @@
-from typing import Any
+import logging
+
 from fastapi import FastAPI, HTTPException
 
 from libs.models import models
@@ -9,6 +10,10 @@ from notifier import notify
 
 
 app = FastAPI()
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 @app.post("/users/", response_model=models.User)
@@ -59,9 +64,8 @@ async def delete_user(user_id: str):
 
 @app.post("/orders/", response_model=models.Order)
 async def create_order(order: schemas.OrderCreate):
-    order = await OrderAPI.create(data=order)
-    # await redis_client.publish('create', user, order)
-    await notify("create", order_id=order.id)
+    res_order = await OrderAPI.create(data=order)
+    await notify("create", order_id=res_order.id)
     return order
 
 
@@ -90,6 +94,7 @@ async def update_order(order_id: str, order_update: schemas.OrderUpdate):
     order = await OrderAPI.update(order_id=order_id, data=order_update)
     if order is None:
         raise HTTPException(status_code=404, detail="Order not found")
+    logger.error("UPDATE ORDER NOTIFY")
     await notify("update", order_id=order.id)
     return order
 

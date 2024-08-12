@@ -1,5 +1,6 @@
 import logging
 from aiogram import types
+from aiogram.filters.callback_data import CallbackData
 
 
 from libs.hidden_client import (
@@ -15,11 +16,15 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-@dp.callback_query_handler(lambda c: c.data.startswith("order_"))
-async def process_callback(callback_query: types.CallbackQuery):
+class OrderCallback(CallbackData, prefix="order"):
+    item_id: str
 
-    item_id = callback_query.data.split("_")[1]
-    item = await HiddenItem.get(item_id)
+
+@dp.callback_query(OrderCallback.filter())
+async def process_callback(
+    callback_query: types.CallbackQuery, callback_data: OrderCallback
+):
+    item = await HiddenItem.get(callback_data.item_id)
 
     if not item:
         await callback_query.answer(f"потерялся товар, обновите меню")

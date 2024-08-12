@@ -13,18 +13,18 @@ async def on_update(user_id, order_id):
     if order is None:
         logger.error(f"Заказ {order_id} не сфетчился")
         return
-    
+
     user = await HiddenUser.get_or_create(id=order.order.user)
 
     if user is None:
         logger.error(f"Пользователь {order.order.user} не сфетчился")
         return
 
-    await bot.send_message(user.user.telegram_id, "Заказ упакован:") 
+    await bot.send_message(user.user.telegram_id, "Заказ упакован:")
 
-    msg = render_template('order_info.txt', order=order.order, items=order.items())
+    msg = render_template("order_info.txt", order=order.order, items=order.items())
     await bot.send_message(user.user.telegram_id, msg)
 
 
-def register_notifiers():
+async def register_notifiers():
     redis_client.listen(msg_type="update", callback=on_update)

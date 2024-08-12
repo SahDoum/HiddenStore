@@ -1,6 +1,9 @@
 import logging
 from aiogram import types
-from init import dp
+from aiogram.filters import Command
+
+# from aiogram.fsm.context import FSMContext
+
 from libs.hidden_client import (
     HiddenUser,
     HiddenOrder,
@@ -9,14 +12,17 @@ from libs.hidden_client import (
     OrderItem,
 )
 
+
 from utils import get_orders_page, get_order_messages
 from keyboards import order_keyboard, orders_pagination_keyboard
+from init import dp
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-@dp.message_handler(commands="orders")
+@dp.message(Command("orders"))
 async def cmd_orders(message: types.Message):
     orders = await HiddenOrder.list()
     if orders is None:
@@ -32,6 +38,12 @@ async def cmd_orders(message: types.Message):
     logger.error(msg)
 
     await message.reply(msg, reply_markup=keyboard)
+
+
+# @dp.message(Command("newitem"))
+# async def start_item_creating(message: types.Message, state: FSMContext):
+#     await state.update_data(edit_item="start")
+#     pass
 
 
 logger.info("Commands registered")

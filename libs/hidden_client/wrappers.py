@@ -12,6 +12,7 @@ from libs.models.schemas import (
     OrderItemUpdate,
 )
 from libs.models.models import OrderItem, Order, User
+from libs.models.statuses import OrderStatus
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -94,7 +95,7 @@ class HiddenOrder:
         is_delivered: Optional[bool] = None,
         is_paid: Optional[bool] = None,
         price: Optional[int] = None,
-        status: Optional[str] = None,
+        status: Optional[OrderStatus] = None,
     ):
         async with APIClient() as api_client:
             order_update = OrderUpdate(
