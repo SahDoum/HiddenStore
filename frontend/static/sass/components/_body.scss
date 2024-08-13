@@ -1,29 +1,4 @@
 #mode-manager {
-	&.mode--order {
-		.page--items {
-			max-height: 0 !important;
-			opacity: 0 !important;
-		}
-
-		.page--order-overview {
-			opacity: 1;
-		}
-	}
-
-	&.mode--payment {
-		.page--order-overview {
-			opacity: 1;
-		}
-
-		.page--order-overview {
-			max-height: 0 !important;
-			opacity: 0 !important;
-		}
-
-		.page--payment {
-			opacity: 1;
-		}
-	}
 
 	&.closed .page {
 		filter: grayscale(1) opacity(0.7);
@@ -39,4 +14,21 @@
 			opacity: 1;
 		}
 	}
+
+	.mode {
+		transition: filter var(--animation);
+		transition: all var(--page-animation);
+
+		opacity: 0;
+		// max-height: 0;
+		height: auto;
+		overflow: hidden;
+	}
+
+	.mode--active {
+		// max-height: 100vh;
+		// height: auto;
+		opacity: 1;
+	}
+
 }

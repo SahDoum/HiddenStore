@@ -1,7 +1,6 @@
 // cafe.js
 
 import $ from 'jquery';
-import './redraw';
 import { StatusManager, Modes } from './cafeStatusManager'
 import { Item } from './cafeItem'
 import { ApiManager } from './apiManager'
@@ -9,7 +8,6 @@ import { ApiManager } from './apiManager'
 
 class Cafe {
 	constructor() {
-		this.canPay = false;
 		this.totalPrice = 0;
 		this.isLoading = false;
 		this.isClosed = false;
@@ -19,11 +17,11 @@ class Cafe {
 	// setup
 
 	init(options) {
+		console.log("init");
 		Telegram.WebApp.ready();
 		this.statusManager.init();
-
+		this.statusManager.toggleMode(Modes.INITIAL);
 		this.setupEventListeners();
-		this.setupMainButton();
 
 		this.apiManager = new ApiManager(
 			options.apiUrl,
@@ -34,6 +32,8 @@ class Cafe {
 	}
 
 	setupEventListeners() {
+		Telegram.WebApp.MainButton.onClick(this.mainBtnClicked.bind(this));
+
 		$(".js-item-incr-btn").on("click", this.eIncrClicked.bind(this));
 		$(".js-item-decr-btn").on("click", this.eDecrClicked.bind(this));
 		$(".js-order-edit").on("click", this.eEditClicked.bind(this));
@@ -49,12 +49,6 @@ class Cafe {
 		document.addEventListener("keydown", (e) => {
 			if (e.keyCode === 13) this.mainBtnClicked();
 		});
-	}
-
-	setupMainButton() {
-		Telegram.WebApp.MainButton.setParams({
-			text_color: "#fff",
-		}).onClick(this.mainBtnClicked.bind(this));
 	}
 
 	// event callbacks
@@ -78,6 +72,7 @@ class Cafe {
 
 	ePaymentClicked(e) {
 		e.preventDefault();
+		console.log("payment back");
 		this.statusManager.toggleMode(Modes.ITEMS);
 	}
 
@@ -108,10 +103,8 @@ class Cafe {
 			const count = +itemEl.data("item-count") || 0;
 			totalPrice += price * count;
 		});
-		this.canPay = totalPrice > 0;
 		this.totalPrice = totalPrice;
 		this.statusManager.setTotalPrice(this.totalPrice);
-		this.statusManager.setCanPay(this.canPay);
 		this.statusManager.updateMainButton();
 	}
 
@@ -122,19 +115,19 @@ class Cafe {
 	}
 
 	mainBtnClicked() {
-		if (!this.canPay || this.isLoading || this.isClosed) {
+		if (this.totalPrice <= 0 || this.isLoading || this.isClosed) {
 			return;
 		}
-		console.log("clicked");
+
 		switch (this.statusManager.modeOrder) {
+			case Modes.INITIAL:
+				this.statusManager.toggleMode(Modes.ITEMS);
+				break;
 			case Modes.ITEMS:
 				this.statusManager.toggleMode(Modes.OVERVIEW);
 				break;
 			case Modes.OVERVIEW:
 				this.order();
-				break;
-			case Modes.INITIAL:
-				this.statusManager.toggleMode(Modes.ITEMS);
 				break;
 		}
 	}

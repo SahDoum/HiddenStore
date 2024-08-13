@@ -22,79 +22,83 @@
 	<link href="/static/assets/styles.min.css" rel="stylesheet">
 </head>
 
-<body id="mode-manager" style="display:none">
-
-	<section class="page page--items">
-		{% for item in items %}
-		<div class="item js-item" data-item-id="{{ item.id }}" data-item-price="{{ item.price }}">
-			<div class="item__counter js-item-counter">1</div>
-			<div class="item__photo">
-				<picture class="item-icon">
-					<img src="static/img/{{ item.image  }}">
-				</picture>
-			</div>
-			<div class="item__label">
-				<span class="item__title">{{ item.item }}</span>
-				<span class="item__price">₾{{ item.price }}</span>
-			</div>
-			<div class="item__buttons">
-				<button class="item__button--decrement js-item-decr-btn button button--ripple-handler">
-					<span class="button__label">Remove</span>
-					<span class="ripple-mask"><span class="ripple"></span></span>
-				</button>
-				<button class="item__button--increment js-item-incr-btn button button--ripple-handler">
-					<span class="button__label">Add</span>
-					<span class="ripple-mask"><span class="ripple"></span></span>
-				</button>
-			</div>
-		</div>
-		{% endfor %}
-		<div class="item item--shadow"></div>
-		<div class="item item--shadow"></div>
-		<div class="item item--shadow"></div>
-		<div class="item item--shadow"></div>
-	</section>
-
-	<section class="page page--order-overview">
-		<div class="block">
-			<div class="order__header-wrap">
-				<h2 class="order__header">Ваш Заказ</h2>
-				<span class="order__edit js-order-edit">Изменить</span>
-			</div>
-
-			<div>
-				{% for item in items %}
-				<div class="order__item js-order-item" data-item-id="{{ item.id }}">
-					<div class="order__item-photo">
-						<picture class="item-icon item-icon--order">
-							<img src="static/img/{{ item.image }}">
-						</picture>
-					</div>
-					<div class="order__item-label">
-						<div class="order__item-title">{{ item.item }}
-							<span class="order__item-counter"><span class="js-order-item-counter">1</span>x</span>
-						</div>
-						<div class="order__item-description">{{ item.details }}</div>
-					</div>
-					<div class="order__item-price js-order-item-price">₾{{ item.price }}</div>
+<body id="mode-manager" style="-display:none">
+	<section class="mode mode--items">
+		<div class="page page--items">
+			{% for item in items %}
+			<div class="item js-item" data-item-id="{{ item.id }}" data-item-price="{{ item.price }}">
+				<div class="item__counter js-item-counter">1</div>
+				<div class="item__photo">
+					<picture class="item-icon">
+						<img src="static/img/{{ item.image  }}">
+					</picture>
 				</div>
-				{% endfor %}
+				<div class="item__label">
+					<span class="item__title">{{ item.item }}</span>
+					<span class="item__price">₾{{ item.price }}</span>
+				</div>
+				<div class="item__buttons">
+					<button class="item__button--decrement js-item-decr-btn button button--ripple-handler">
+						<span class="button__label">Remove</span>
+						<span class="ripple-mask"><span class="ripple"></span></span>
+					</button>
+					<button class="item__button--increment js-item-incr-btn button button--ripple-handler">
+						<span class="button__label">Add</span>
+						<span class="ripple-mask"><span class="ripple"></span></span>
+					</button>
+				</div>
 			</div>
+			{% endfor %}
+			<div class="item item--shadow"></div>
+			<div class="item item--shadow"></div>
+			<div class="item item--shadow"></div>
+			<div class="item item--shadow"></div>
 		</div>
-		<div class="text-field__wrap">
-			<textarea class="text-field js-order-comment-field block" rows="1"
-				placeholder="Комментарий к заказу…"></textarea>
-			<div class="text-field__hint">
-				Любые дополнительные запросы, детали, пожелания.
+	</section>
+	<section class="mode mode--order-overview">
+		<div class="page page--order-overview">
+			<div class="block">
+				<div class="order__header-wrap">
+					<h2 class="order__header">Ваш Заказ</h2>
+					<span class="order__edit js-order-edit">Изменить</span>
+				</div>
+
+				<div>
+					{% for item in items %}
+					<div class="order__item js-order-item" data-item-id="{{ item.id }}">
+						<div class="order__item-photo">
+							<picture class="item-icon item-icon--order">
+								<img src="static/img/{{ item.image }}">
+							</picture>
+						</div>
+						<div class="order__item-label">
+							<div class="order__item-title">{{ item.item }}
+								<span class="order__item-counter"><span class="js-order-item-counter">1</span>x</span>
+							</div>
+							<div class="order__item-description">{{ item.details }}</div>
+						</div>
+						<div class="order__item-price js-order-item-price">₾{{ item.price }}</div>
+					</div>
+					{% endfor %}
+				</div>
+			</div>
+			<div class="text-field__wrap">
+				<textarea class="text-field js-order-comment-field block" rows="1"
+					placeholder="Комментарий к заказу…"></textarea>
+				<div class="text-field__hint">
+					Любые дополнительные запросы, детали, пожелания.
+				</div>
 			</div>
 		</div>
 	</section>
 
-	<section class="page page--payment">
-		<div class="block">
-			<div class="order__header-wrap">
-				<h2 class="order__header">Заказываю</h2>
-				<span class="order__edit js-payment-edit">Назад</span>
+	<section class="mode mode--payment">
+		<div class="page page--payment">
+			<div class="block">
+				<div class="order__header-wrap">
+					<h2 class="order__header">Заказываю</h2>
+					<span class="order__edit js-payment-edit">Назад</span>
+				</div>
 			</div>
 		</div>
 	</section>
@@ -106,13 +110,13 @@
 	<script src="https://tg.dev/js/jquery.min.js"></script>
 	<script src="/static/assets/scripts.min.js"></script>
 	<script>
-		var userId = JSON.parse(new URLSearchParams(window.Telegram.WebApp.initData).get('user')).id;
-		let initData = new URLSearchParams(window.Telegram.WebApp.initData);
-		var initDataHash = initData.get('hash');
+		var userId = 0;//JSON.parse(new URLSearchParams(window.Telegram.WebApp.initData).get('user')).id;
+		// let initData = new URLSearchParams(window.Telegram.WebApp.initData);
+		var initDataHash = "";//initData.get('hash');
 
-		initData.delete('hash');
-		initData.sort();
-		var dataCheckString = initData.toString();
+		// initData.delete('hash');
+		// initData.sort();
+		var dataCheckString = ""; // initData.toString();
 
 		var cafe_api = `${window.location.origin}/api`;
 

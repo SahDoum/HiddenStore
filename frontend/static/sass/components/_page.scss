@@ -1,15 +1,19 @@
 .page {
-	transition: filter var(--animation);
+	font-family: var(--default-font);
+	background-color: var(--bg-color);
+
+	height: auto;
+	overflow: hidden;
 }
 
 .page--items {
 	display: flex;
 	flex-wrap: wrap;
+	align-content: flex-start;
 	margin: 0 auto;
 	max-width: 480px;
 	justify-content: space-around;
-	align-content: flex-end;
-	transition: max-height var(--page-animation), opacity var(--page-animation);
+	align-content: flex-start;
 	background-color: var(--block-bg-color);
 
 	.page--items:after {
@@ -18,19 +22,6 @@
 	}
 }
 
-.page--order-overview {
-	display: none;
-	overflow: hidden;
-	font-family: var(--default-font);
-	background-color: var(--bg-color);
-	transition: all var(--page-animation);
-	opacity: 0;
-}
+.page--order-overview {}
 
-.page--payment {
-	display: none;
-	font-family: var(--default-font);
-	background-color: var(--bg-color);
-	transition: opacity var(--page-animation);
-	opacity: 0;
-}
+.page--payment {}
