@@ -43,7 +43,7 @@ class UserAPI:
     async def get_all() -> list[User]:
         async with await get_session() as session:
             result = await session.execute(select(User))
-            return result.scalars().all()
+            return list(result.scalars().all())
 
     @staticmethod
     async def update(user_id: str, data: UserUpdate) -> Optional[User]:
@@ -91,13 +91,13 @@ class OrderAPI:
     async def get_all() -> list[Order]:
         async with await get_session() as session:
             result = await session.execute(select(Order))
-            return result.scalars().all()
+            return list(result.scalars().all())
 
     @staticmethod
     async def get_by_user(user_id: str) -> list[Order]:
         async with await get_session() as session:
             result = await session.execute(select(Order).where(Order.user == user_id))
-            return result.scalars().all()
+            return list(result.scalars().all())
 
     @staticmethod
     async def update(order_id: str, data: OrderUpdate) -> Optional[Order]:
@@ -157,7 +157,7 @@ class ItemsAPI:
     async def get_all() -> list[OrderItem]:
         async with await get_session() as session:
             result = await session.execute(select(OrderItem))
-            return result.scalars().all()
+            return list(result.scalars().all())
 
     @staticmethod
     async def update(item_id: str, data: OrderItemUpdate) -> Optional[OrderItem]:
