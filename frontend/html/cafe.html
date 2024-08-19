@@ -56,32 +56,31 @@
 		</div>
 	</section>
 	<section class="mode mode--order-overview">
-		<div class="page page--order-overview">
-			<div class="block">
-				<div class="order__header-wrap">
-					<h2 class="order__header">Ваш Заказ</h2>
-					<span class="order__edit js-order-edit">Изменить</span>
-				</div>
-
-				<div>
-					{% for item in items %}
-					<div class="order__item js-order-item" data-item-id="{{ item.id }}">
-						<div class="order__item-photo">
-							<picture class="item-icon item-icon--order">
-								<img src="static/img/{{ item.image }}">
-							</picture>
-						</div>
-						<div class="order__item-label">
-							<div class="order__item-title">{{ item.item }}
-								<span class="order__item-counter"><span class="js-order-item-counter">1</span>x</span>
-							</div>
-							<div class="order__item-description">{{ item.details }}</div>
-						</div>
-						<div class="order__item-price js-order-item-price">₾{{ item.price }}</div>
-					</div>
-					{% endfor %}
-				</div>
+		<div class="page">
+			<div class="page__header-wrap">
+				<h2 class="page__header">Ваш Заказ</h2>
+				<span class="page__edit js-order-edit">Изменить</span>
 			</div>
+
+			<div>
+				{% for item in items %}
+				<div class="order-item js-order-item" data-item-id="{{ item.id }}">
+					<div class="order-item__photo">
+						<picture class="item-icon item-icon--order">
+							<img src="static/img/{{ item.image }}">
+						</picture>
+					</div>
+					<div class="order-item__label">
+						<div class="order-item__title">{{ item.item }}
+							<span class="order-item__counter"><span class="js-order-item__counter">1</span>x</span>
+						</div>
+						<div class="order-item__description">{{ item.details }}</div>
+					</div>
+					<div class="order-item__price js-order-item__price">₾{{ item.price }}</div>
+				</div>
+				{% endfor %}
+			</div>
+
 			<div class="text-field__wrap">
 				<textarea class="text-field js-order-comment-field block" rows="1"
 					placeholder="Комментарий к заказу…"></textarea>
@@ -92,13 +91,21 @@
 		</div>
 	</section>
 
+	<section class="mode mode--delivery">
+		<div class="page">
+			<div class="page__header-wrap">
+				<h2 class="page__header">Доставка</h2>
+				<span class="page__edit js-payment-edit">Назад</span>
+			</div>
+			<div>Ну тут параметры</div>
+		</div>
+	</section>
+
 	<section class="mode mode--payment">
-		<div class="page page--payment">
-			<div class="block">
-				<div class="order__header-wrap">
-					<h2 class="order__header">Заказываю</h2>
-					<span class="order__edit js-payment-edit">Назад</span>
-				</div>
+		<div class="page">
+			<div class="page__header-wrap">
+				<h2 class="page__header">Заказываю</h2>
+				<span class="page__edit js-payment-edit">Назад</span>
 			</div>
 		</div>
 	</section>

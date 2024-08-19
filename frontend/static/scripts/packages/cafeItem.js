@@ -47,10 +47,10 @@ export class Item {
 		itemEl.toggleClass("item--selected", count > 0);
 
 		const orderItemEl = item.getOrderItem();
-		const orderCounterEl = $(".js-order-item-counter", orderItemEl);
+		const orderCounterEl = $(".js-order-item__counter", orderItemEl);
 		orderCounterEl.text(count ? count : 1);
-		orderItemEl.toggleClass("order__item--selected", count > 0);
-		const orderPriceEl = $(".js-order-item-price", orderItemEl);
+		orderItemEl.toggleClass("order-item--selected", count > 0);
+		const orderPriceEl = $(".js-order-item__price", orderItemEl);
 		const itemPrice = count * price;
 		orderPriceEl.text(formatPrice(itemPrice));
 	}

@@ -1,0 +1,45 @@
+.order-item {
+	display: none;
+	padding: 5px 20px 5px 14px;
+}
+
+.order-item--selected {
+	display: flex;
+}
+
+.order-item__label {
+	flex-grow: 1;
+}
+
+.order-item__photo {
+	text-align: center;
+	width: 50px;
+	height: 50px;
+	margin-right: 11px;
+}
+
+.order-item__title {
+	font-size: 15px;
+	line-height: 18px;
+	font-weight: 700;
+	padding: 3px 0;
+}
+
+.order-item__counter {
+	color: var(--main-color);
+}
+
+.order-item__description {
+	font-size: 14px;
+	line-height: 17px;
+	-webkit-font-smoothing: antialiased;
+	color: var(--page-hint-color);
+	padding: 2px 0;
+}
+
+.order-item__price {
+	font-size: 14px;
+	line-height: 17px;
+	font-weight: 500;
+	padding: 4px 0;
+}

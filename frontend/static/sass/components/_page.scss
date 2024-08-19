@@ -22,6 +22,23 @@
 	}
 }
 
-.page--order-overview {}
+.page__header-wrap {
+	padding: 21px 20px 14px;
+	display: flex;
+	align-items: center;
+}
 
-.page--payment {}
+.page__header {
+	font-size: 17px;
+	line-height: 21px;
+	text-transform: uppercase;
+	flex-grow: 1;
+	margin: 0;
+}
+
+.page__edit {
+	font-size: 15px;
+	line-height: 18px;
+	font-weight: 500;
+	color: var(--accent-color);
+}

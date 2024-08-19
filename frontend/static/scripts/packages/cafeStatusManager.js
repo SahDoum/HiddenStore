@@ -7,7 +7,8 @@ import { formatPrice } from './utils';
 export const Modes = {
 	INITIAL: 0,
 	ITEMS: 1,
-	OVERVIEW: 2,
+	DELIVERY: 2,
+	OVERVIEW: 3,
 };
 
 /// 
@@ -16,6 +17,7 @@ export const Modes = {
 const ModePages = {
 	[Modes.INITIAL]: $(".mode--items"),
 	[Modes.ITEMS]: $(".mode--order-overview"),
+	[Modes.DELIVERY]: $(".mode--delivery"),
 	[Modes.OVERVIEW]: $(".mode--payment"),
 };
 
@@ -66,7 +68,6 @@ export class StatusManager {
 			case Modes.INITIAL:
 				break;
 			case Modes.ITEMS:
-
 				$(".js-order-comment-field").each(function () {
 					autosize.update(this);
 				});

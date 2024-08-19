@@ -124,6 +124,9 @@ class Cafe {
 				this.statusManager.toggleMode(Modes.ITEMS);
 				break;
 			case Modes.ITEMS:
+				this.statusManager.toggleMode(Modes.DELIVERY);
+				break;
+			case Modes.DELIVERY:
 				this.statusManager.toggleMode(Modes.OVERVIEW);
 				break;
 			case Modes.OVERVIEW:
