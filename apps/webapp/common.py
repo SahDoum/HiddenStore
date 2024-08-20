@@ -44,3 +44,7 @@ async def make_items(items: dict[str, float]) -> list[tuple[OrderItem, float]]:
         except Exception as e:
             raise e
     return res
+
+
+def get_price(items: dict[str, float]) -> int:
+    return 0

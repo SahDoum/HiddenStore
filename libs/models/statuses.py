@@ -1,24 +1,30 @@
 from enum import Enum
 
 
-class PaymentType(str, Enum):
-    CRYPTO_INVOICE = "crypto"
+class PaymentMethod(str, Enum):
+    CARD = "card"
     CASH = "cash"
+    CRYPTO_INVOICE = "crypto_invoice"
 
 
 class PaymentStatus(str, Enum):
-    NONE = "No payment method"
+    CREATED = "created"
+    PENDING = "pending"
+    CONFIRMED = "confirmed"
+    FAILED = "failed"
 
-    # Invoice
-    INVOICE_CREATED = "invoice created"
-    INVOICE_SUBMITTED = "invoice submitted"
-    INVOICE_APPROVED = "invoice approved"
 
-    # Cash
-    IN_CASH = "cash"
+class DeliveryMethod(str, Enum):
+    SELF_PICKUP = "self_pickup"
+    COURIER = "courier"
+    PICKUP_POINT = "pickup_point"
 
-    # Finished
-    PAYED = "payed"
+
+class DeliveryStatus(str, Enum):
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    FAILED = "failed"
 
 
 class OrderStatus(str, Enum):

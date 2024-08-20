@@ -6,7 +6,13 @@ import datetime
 from sqlmodel import SQLModel, Field, Column, JSON
 from sqlalchemy import TypeDecorator, VARCHAR
 
-from .statuses import OrderStatus, PaymentStatus
+from .statuses import (
+    OrderStatus,
+    PaymentStatus,
+    PaymentMethod,
+    DeliveryMethod,
+    DeliveryStatus,
+)
 
 
 # Ccustom type decorator for handling JSON lists of pairs
@@ -32,6 +38,31 @@ class BaseObject(SQLModel):
     timestamp_updated: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
 
+class PickupPoint(BaseObject, table=True):
+    __tablename__ = "pickuppoints"
+    address: Optional[str] = None
+    description: Optional[str] = None
+
+
+class PaymentIntent(BaseObject, table=True):
+    __tablename__ = "paymentintents"
+    amount: int
+    method: PaymentMethod
+    status: PaymentStatus = Field(default=PaymentStatus.PENDING)
+    payment_details: Optional[dict] = Field(sa_column=Column(JSON))
+
+
+class DeliveryDetails(BaseObject, table=True):
+    __tablename__ = "deliverydetails"
+    method: DeliveryMethod
+    status: DeliveryStatus = Field(default=DeliveryStatus.PENDING)
+    address: Optional[str] = None  # Для доставки курьером или из точки доставки
+    pickup_point_id: Optional[str] = Field(default=None, foreign_key="pickuppoints.id")
+    delivery_time: Optional[datetime.datetime] = None
+    courier_id: Optional[str] = None  # Если доставка курьером
+    additional_info: Optional[str] = None  # Любая дополнительная информация
+
+
 class User(BaseObject, table=True):
     __tablename__ = "users"
     name: str
@@ -48,30 +79,19 @@ class OrderItem(BaseObject, table=True):
     image: str = "default.png"
 
 
-class PickupPoint(BaseObject, table=True):
-    adress: Optional[str] = None
-    description: Optional[str] = None
-
-
 class Order(BaseObject, table=True):
     __tablename__ = "orders"
 
-    # Common
-    status: OrderStatus = Field(default=OrderStatus.CREATED)
+    status: OrderStatus = Field(default=OrderStatus.CREATED)  # Deprecated
     user: str = Field(default=None, foreign_key="users.id")
-
-    # On create
     items: list[tuple[str, float]] = Field(
         default=[], sa_column=Column(JSONListOfPairs)
     )
     price: int
     comment: Optional[str] = None
-    is_paid: bool = Field(default=False)
-    payment: PaymentStatus = Field(default=PaymentStatus.NONE)
 
-    # On delivery
-    details: Optional[str] = None
+    payment_id: Optional[str] = Field(default=None, foreign_key="paymentintents.id")
+    delivery_id: Optional[str] = Field(default=None, foreign_key="deliverydetails.id")
 
-    # On finish
     review: Optional[str] = None
     is_delivered: bool = Field(default=False)

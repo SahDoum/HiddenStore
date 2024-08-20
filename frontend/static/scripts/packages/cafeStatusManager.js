@@ -1,4 +1,6 @@
 import $ from 'jquery';
+import autosize from 'autosize';
+
 import './redraw';
 import { formatPrice } from './utils';
 
@@ -37,6 +39,17 @@ export class StatusManager {
 		this.mainButton.setParams({
 			text_color: "#fff",
 		});
+
+		console.log('init()')
+		var fields = $(".js-order-comment-field");
+		autosize(fields);
+
+		// fields.each(function () {
+		// 	autosize(this);
+		// }).on('autosize:resized', function () {
+		// 	console.log('textarea height updated');
+		// });
+
 	}
 
 	setTotalPrice(price) {
@@ -68,9 +81,6 @@ export class StatusManager {
 			case Modes.INITIAL:
 				break;
 			case Modes.ITEMS:
-				$(".js-order-comment-field").each(function () {
-					autosize.update(this);
-				});
 				Telegram.WebApp.expand();
 				break;
 			case Modes.OVERVIEW:

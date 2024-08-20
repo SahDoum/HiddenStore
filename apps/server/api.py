@@ -3,7 +3,14 @@ from typing import Optional
 import datetime
 from sqlmodel import select
 
-from libs.models.models import User, Order, OrderItem
+from libs.models.models import (
+    User,
+    Order,
+    OrderItem,
+    DeliveryDetails,
+    PaymentIntent,
+    PickupPoint,
+)
 from libs.models.schemas import (
     UserCreate,
     UserUpdate,
@@ -11,6 +18,12 @@ from libs.models.schemas import (
     OrderUpdate,
     OrderItemCreate,
     OrderItemUpdate,
+    DeliveryDetailsCreate,
+    DeliveryDetailsUpdate,
+    PaymentIntentCreate,
+    PaymentIntentUpdate,
+    PickupPointCreate,
+    PickupPointUpdate,
 )
 
 from db_config import get_session
@@ -185,6 +198,169 @@ class ItemsAPI:
             item = await session.get(OrderItem, item_id)
             if item:
                 await session.delete(item)
+                await session.commit()
+                return True
+            return False
+
+
+class PickupPointAPI:
+    @staticmethod
+    async def create(data: PickupPointCreate) -> PickupPoint:
+        async with await get_session() as session:
+            pickuppoint = PickupPoint(
+                address=data.address, description=data.description
+            )
+            session.add(pickuppoint)
+            await session.commit()
+            await session.refresh(pickuppoint)
+            return pickuppoint
+
+    @staticmethod
+    async def get(pickuppoint_id: str) -> Optional[PickupPoint]:
+        async with await get_session() as session:
+            return await session.get(PickupPoint, pickuppoint_id)
+
+    @staticmethod
+    async def get_all() -> list[PickupPoint]:
+        async with await get_session() as session:
+            result = await session.execute(select(PickupPoint))
+            return list(result.scalars().all())
+
+    @staticmethod
+    async def update(
+        pickuppoint_id: str, data: PickupPointUpdate
+    ) -> Optional[PickupPoint]:
+        async with await get_session() as session:
+            pickuppoint = await session.get(PickupPoint, pickuppoint_id)
+            if pickuppoint:
+                if data.address is not None:
+                    pickuppoint.address = data.address
+                if data.description is not None:
+                    pickuppoint.description = data.description
+                pickuppoint.timestamp_updated = datetime.datetime.now()
+                await session.commit()
+                await session.refresh(pickuppoint)
+            return pickuppoint
+
+    @staticmethod
+    async def delete(pickuppoint_id: str) -> bool:
+        async with await get_session() as session:
+            pickuppoint = await session.get(PickupPoint, pickuppoint_id)
+            if pickuppoint:
+                await session.delete(pickuppoint)
+                await session.commit()
+                return True
+            return False
+
+
+class PaymentIntentAPI:
+    @staticmethod
+    async def create(data: PaymentIntentCreate) -> PaymentIntent:
+        async with await get_session() as session:
+            payment_intent = PaymentIntent(
+                amount=data.amount,
+                method=data.method,
+                payment_details=data.payment_details,
+            )
+            session.add(payment_intent)
+            await session.commit()
+            await session.refresh(payment_intent)
+            return payment_intent
+
+    @staticmethod
+    async def get(payment_intent_id: str) -> Optional[PaymentIntent]:
+        async with await get_session() as session:
+            return await session.get(PaymentIntent, payment_intent_id)
+
+    @staticmethod
+    async def get_all() -> list[PaymentIntent]:
+        async with await get_session() as session:
+            result = await session.execute(select(PaymentIntent))
+            return list(result.scalars().all())
+
+    @staticmethod
+    async def update(
+        payment_intent_id: str, data: PaymentIntentUpdate
+    ) -> Optional[PaymentIntent]:
+        async with await get_session() as session:
+            payment_intent = await session.get(PaymentIntent, payment_intent_id)
+            if payment_intent:
+                if data.status is not None:
+                    payment_intent.status = data.status
+                if data.payment_details is not None:
+                    payment_intent.payment_details = data.payment_details
+                payment_intent.timestamp_updated = datetime.datetime.now()
+                await session.commit()
+                await session.refresh(payment_intent)
+            return payment_intent
+
+    @staticmethod
+    async def delete(payment_intent_id: str) -> bool:
+        async with await get_session() as session:
+            payment_intent = await session.get(PaymentIntent, payment_intent_id)
+            if payment_intent:
+                await session.delete(payment_intent)
+                await session.commit()
+                return True
+            return False
+
+
+class DeliveryDetailsAPI:
+    @staticmethod
+    async def create(data: DeliveryDetailsCreate) -> DeliveryDetails:
+        async with await get_session() as session:
+            delivery_details = DeliveryDetails(
+                method=data.method,
+                address=data.address,
+                pickup_point_id=data.pickup_point_id,
+                delivery_time=data.delivery_time,
+                courier_id=data.courier_id,
+                additional_info=data.additional_info,
+            )
+            session.add(delivery_details)
+            await session.commit()
+            await session.refresh(delivery_details)
+            return delivery_details
+
+    @staticmethod
+    async def get(delivery_details_id: str) -> Optional[DeliveryDetails]:
+        async with await get_session() as session:
+            return await session.get(DeliveryDetails, delivery_details_id)
+
+    @staticmethod
+    async def get_all() -> list[DeliveryDetails]:
+        async with await get_session() as session:
+            result = await session.execute(select(DeliveryDetails))
+            return list(result.scalars().all())
+
+    @staticmethod
+    async def update(
+        delivery_details_id: str, data: DeliveryDetailsUpdate
+    ) -> Optional[DeliveryDetails]:
+        async with await get_session() as session:
+            delivery_details = await session.get(DeliveryDetails, delivery_details_id)
+            if delivery_details:
+                if data.status is not None:
+                    delivery_details.status = data.status
+                if data.address is not None:
+                    delivery_details.address = data.address
+                if data.delivery_time is not None:
+                    delivery_details.delivery_time = data.delivery_time
+                if data.courier_id is not None:
+                    delivery_details.courier_id = data.courier_id
+                if data.additional_info is not None:
+                    delivery_details.additional_info = data.additional_info
+                delivery_details.timestamp_updated = datetime.datetime.now()
+                await session.commit()
+                await session.refresh(delivery_details)
+            return delivery_details
+
+    @staticmethod
+    async def delete(delivery_details_id: str) -> bool:
+        async with await get_session() as session:
+            delivery_details = await session.get(DeliveryDetails, delivery_details_id)
+            if delivery_details:
+                await session.delete(delivery_details)
                 await session.commit()
                 return True
             return False
