@@ -8,13 +8,14 @@ from libs.hidden_client import (
     HiddenMenu,
     HiddenItem,
     OrderItem,
+    HiddenPickupPoint,
 )
 from libs.models.statuses import OrderStatus
 
 from init import dp, bot, render_template
 from keyboards import orders_pagination_keyboard, order_edit_keyboard
 from utils import get_orders_page, get_order_messages
-from data import OrderCallback, PageCallback
+from data import OrderCallback, PageCallback, PickupPointDeleteCallback
 
 
 logging.basicConfig(level=logging.INFO)
@@ -86,6 +87,32 @@ async def process_callback_order_show(
         text=msg,
         reply_markup=keyboard,
     )
+
+
+# Callback handler for pickup point deletion
+@dp.callback_query(PickupPointDeleteCallback.filter())
+async def process_delete_pickup_point(
+    callback_query: types.CallbackQuery, callback_data: PickupPointDeleteCallback
+):
+    # Retrieve the pickup point ID
+    pickup_point_id = callback_data.pickup_point_id
+
+    # Placeholder: Call the delete method for the selected pickup point
+    point = await HiddenPickupPoint.get(pickup_point_id)
+
+    success = False
+    if point:
+        success = await point.delete()
+
+    if success:
+        await callback_query.answer(f"Пункт самовывоза удален.")
+        await bot.edit_message_text(
+            text=f"Пункт самовывоза удален.",
+            chat_id=callback_query.message.chat.id,
+            message_id=callback_query.message.message_id,
+        )
+    else:
+        await callback_query.answer("Ошибка при удалении пункта самовывоза.")
 
 
 logger.error("Callbacks registered")

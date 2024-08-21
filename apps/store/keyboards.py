@@ -4,7 +4,7 @@ from libs.models.models import Order
 from config import ORDERS_PER_PAGE
 from utils import get_orders_page
 
-from data import OrderCallback, PageCallback
+from data import OrderCallback, PageCallback, PickupPointDeleteCallback
 
 
 def order_keyboard(order: Order):
@@ -59,5 +59,19 @@ def order_edit_keyboard(order: Order):
     builder.button(text="<< К списку заказов", callback_data=PageCallback(page=0))
 
     builder.adjust(3, 1)
+
+    return builder.as_markup()
+
+
+def delete_pickup_point_keyboard(pickup_points: list):
+    builder = InlineKeyboardBuilder()
+
+    for pickup_point in pickup_points:
+        builder.button(
+            text=pickup_point.pickup_point.address,
+            callback_data=PickupPointDeleteCallback(
+                pickup_point_id=pickup_point.pickup_point.id
+            ),
+        )
 
     return builder.as_markup()
