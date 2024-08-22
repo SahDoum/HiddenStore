@@ -60,13 +60,17 @@ async def order(request: OrderData):
             logger.error("Invalid data")
             raise HTTPException(status_code=400, detail="Invalid data")
 
-        logger.error("/api/order here")
         price = request.price
 
         user = await HiddenUser.get_or_create(telegram_id=request.user_id)
         items = await make_items(request.items)
+        comment = request.comment
+        pickup_point_id = request.pickup_point_id
+        payment_method = PaymentMethod[request.payment_method]
 
-        hidden_order = await HiddenOrder.create(items, price, user)
+        hidden_order = await HiddenOrder.create(
+            items, price, user, comment, payment_method, pickup_point_id
+        )
         logger.error("Order created")
         return hidden_order
     except Exception as e:

@@ -249,6 +249,8 @@ class HiddenOrder:
         price: int,
         user: HiddenUser,
         comment: Optional[str] = None,
+        payment_method: Optional[PaymentMethod] = None,
+        pickup_point_id: Optional[str] = None,
     ):
         async with APIClient() as api_client:
             order_data = OrderCreate(
@@ -258,6 +260,8 @@ class HiddenOrder:
                 price=price,
                 user=user.user.id,  # Use the user ID from HiddenUser
                 comment=comment,
+                payment_method=payment_method,
+                pickup_point_id=pickup_point_id,
             )
             order = await api_client.create_order(order_data=order_data)
         return cls(Order.parse_obj(order))

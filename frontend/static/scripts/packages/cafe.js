@@ -41,9 +41,6 @@ class Cafe {
 		$(".js-status").on("click", this.eStatusClicked.bind(this));
 
 		$(".js-delivery-edit").on("click", this.eDeliveryEditClicked.bind(this));
-		// $(".js-item-cash-btn").on("click", this.ePayCash.bind(this));
-		// $(".js-item-card-btn").on("click", this.ePayCard.bind(this));
-
 		// $(".js-order-comment-field").each((_, el) => {
 		// 	autosize(el);
 		// });
@@ -74,14 +71,11 @@ class Cafe {
 
 	eDeliveryEditClicked(e) {
 		e.preventDefault();
-
-		console.log("delivery back");
 		this.statusManager.toggleMode(Modes.ITEMS);
 	}
 
 	ePaymentClicked(e) {
 		e.preventDefault();
-		console.log("payment back");
 		this.statusManager.toggleMode(Modes.DELIVERY);
 	}
 
@@ -136,9 +130,17 @@ class Cafe {
 				this.statusManager.toggleMode(Modes.DELIVERY);
 				break;
 			case Modes.DELIVERY:
+				if (!this.validatePickupPoint()) {
+					this.showStatus("Выбери пункт доставки");
+					break;
+				}
 				this.statusManager.toggleMode(Modes.OVERVIEW);
 				break;
 			case Modes.OVERVIEW:
+				if (!this.validatePayment()) {
+					this.showStatus("Выбери тип оплаты");
+					break;
+				}
 				this.order();
 				break;
 		}
@@ -179,7 +181,9 @@ class Cafe {
 		const params = {
 			items: this.getOrderData(),
 			comment,
-			price: this.totalPrice
+			price: this.totalPrice,
+			pickup_point_id: this.getPickupPoint(),
+			payment_method: this.getPayment(),
 		};
 		this.toggleLoading(true);
 		this.apiManager.request("order", params, (result) => {
@@ -192,6 +196,24 @@ class Cafe {
 				this.showStatus(result.error);
 			}
 		});
+	}
+
+	// form validators and getters
+
+	validatePickupPoint() {
+		return $('input[name="pickup-group"]:checked').length > 0;
+	}
+
+	getPickupPoint() {
+		return $('input[name="pickup-group"]:checked').attr('id');
+	}
+
+	validatePayment() {
+		return $('input[name="payment-group"]:checked').length > 0;
+	}
+
+	getPayment() {
+		return $('input[name="payment-group"]:checked').attr('id');
 	}
 
 };

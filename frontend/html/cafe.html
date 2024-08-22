@@ -31,7 +31,7 @@
 					<div class="item__counter js-item-counter">1</div>
 					<div class="item__photo">
 						<picture class="item-icon">
-							<img src="static/img/{{ item.image  }}">
+							<img src="static/img/{{ item.image }}">
 						</picture>
 					</div>
 					<div class="item__label">
@@ -100,7 +100,7 @@
 			<div class="page__text">Выберите пункт выдачи заказа:</div>
 			<div class="page__block">
 				{% for point in pickup_points %}
-				<input type="radio" id="{{ point.pickup_point.id }}" name="radio-group" class="input input--radio">
+				<input type="radio" id="{{ point.pickup_point.id }}" name="pickup-group" class="input input--radio">
 				<label for="{{ point.pickup_point.id }}" class="input__label">
 					<div class="list-item list-item--selected ripple-wrapper">
 						<div class="list-item__photo">
@@ -136,7 +136,7 @@
 
 			<div class="page__block">
 				{% for method in payment_method %}
-				<input type="radio" id="{{ method.name }}" name="radio-group" class="input input--radio">
+				<input type="radio" id="{{ method.name }}" name="payment-group" class="input input--radio">
 				<label for="{{ method.name }}" class="input__label">
 					<div class="list-item list-item--selected ripple-wrapper">
 						<div class="list-item__label">

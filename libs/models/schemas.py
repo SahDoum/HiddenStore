@@ -26,6 +26,8 @@ class OrderCreate(BaseModel):
     price: int
     user: str
     comment: Optional[str] = None
+    pickup_point_id: Optional[str] = None
+    payment_method: Optional[PaymentMethod] = None
 
 
 class OrderUpdate(BaseModel):

@@ -26,6 +26,8 @@ from libs.models.schemas import (
     PickupPointUpdate,
 )
 
+from libs.models.statuses import PaymentMethod, DeliveryMethod
+
 from db_config import get_session
 
 
@@ -87,8 +89,35 @@ class OrderAPI:
     @staticmethod
     async def create(data: OrderCreate) -> Order:
         async with await get_session() as session:
+
+            # create payment
+            # create delivery
+
+            payment_method = (
+                data.payment_method if data.payment_method else PaymentMethod.CASH
+            )
+
+            payment = PaymentIntent(
+                amount=data.price, method=payment_method, payment_details={}
+            )
+            session.add(payment)
+            await session.commit()
+            await session.refresh(payment)
+
+            delivery = DeliveryDetails(
+                method=DeliveryMethod.PICKUP_POINT, pickup_point_id=data.pickup_point_id
+            )
+            session.add(delivery)
+            await session.commit()
+            await session.refresh(delivery)
+
             order = Order(
-                items=data.items, price=data.price, user=data.user, comment=data.comment
+                items=data.items,
+                price=data.price,
+                user=data.user,
+                comment=data.comment,
+                payment_id=payment.id,
+                delivery_id=delivery.id,
             )
             session.add(order)
             await session.commit()

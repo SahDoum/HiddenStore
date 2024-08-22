@@ -48,7 +48,7 @@ class PaymentIntent(BaseObject, table=True):
     __tablename__ = "paymentintents"
     amount: int
     method: PaymentMethod
-    status: PaymentStatus = Field(default=PaymentStatus.PENDING)
+    status: PaymentStatus = Field(default=PaymentStatus.CREATED)
     payment_details: Optional[dict] = Field(sa_column=Column(JSON))
 
 
