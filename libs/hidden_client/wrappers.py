@@ -101,6 +101,17 @@ class HiddenPickupPoint:
             cls(PickupPoint.parse_obj(pickup_point_data)) if pickup_point_data else None
         )
 
+    @classmethod
+    async def get_all(cls) -> list["HiddenPickupPoint"]:
+        res: list["HiddenPickupPoint"] = []
+
+        async with APIClient() as api_client:
+            pickup_points = await api_client.get_pickup_points()
+        for point in pickup_points:
+            res.append(HiddenPickupPoint(PickupPoint.parse_obj(point)))
+
+        return res
+
     async def update(self, pickup_point_data: PickupPointUpdate) -> bool:
         async with APIClient() as api_client:
             updated_pickup_point = await api_client.update_pickup_point(

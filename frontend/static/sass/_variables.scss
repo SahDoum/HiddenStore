@@ -1,23 +1,34 @@
 // _variables.scss
 
 $default-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-$block-bg-color: var(--tg-theme-bg-color);
 $bg-color: #ebedf0;
 $dark-bg-color: #0f0f0f;
 $animation: 0.15s ease;
-$page-animation-duration: 0.3s;
-$page-animation: $page-animation-duration ease;
-$status-height: 48px;
+$page-animation: 0.3s ease;
 $accent-color: #31b545;
-$main-color: #f8a917;
-$main-color-light: #fbd48b;
 $text-color: #222;
 $dark-text-color: #fff;
-$page-hint-color: #83878a;
-$dark-page-hint-color: #9b9ba1;
 $hint-color: #74787a;
 $dark-hint-color: #64666d;
 $placeholder-color: #999da1;
 $dark-placeholder-color: #5d6163;
 $ripple-duration: 0.45s;
 $ripple-end-duration: 0.3s;
+
+
+:root {
+	--default-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+	--block-bg-color: var(--tg-theme-bg-color);
+	--bg-color: #ebedf0;
+	--animation: #{$animation};
+	--page-animation: #{$page-animation};
+	--status-height: 48px;
+	--accent-color: #{$accent-color};
+	--main-color: #f8a917;
+	--main-color-light: #fbd48b;
+	--text-color: #{$text-color};
+	--hint-color: #{$hint-color};
+	--placeholder-color: #{$placeholder-color};
+	--ripple-duration: #{$ripple-duration};
+	--ripple-end-duration: #{$ripple-end-duration};
+}

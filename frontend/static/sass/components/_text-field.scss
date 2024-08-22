@@ -26,10 +26,8 @@
 }
 
 .text-field__hint {
-	font-family: var(--default-font);
-	font-size: 14px;
-	line-height: 18px;
-	-webkit-font-smoothing: antialiased;
+	@include hint-text;
 	padding: 10px 20px 24px;
 	color: var(--hint-color);
+	background-color: var(--bg-color);
 }

@@ -3,7 +3,7 @@
 export const initRipple = () => {
 	if (!document.querySelectorAll) return;
 
-	const rippleHandlers = document.querySelectorAll(".button--ripple-handler");
+	const rippleHandlers = document.querySelectorAll(".ripple-wrapper");
 
 	const redraw = (el) => {
 		el.offsetTop + 1;

@@ -60,10 +60,7 @@ button {
 button,
 .item__counter {
 	display: inline-block;
-	font-family: var(--default-font);
-	font-weight: 700;
-	font-size: 14px;
-	line-height: 18px;
+	@include extra-text;
 	padding: 6px 16px;
 	height: 30px;
 	border-radius: 7px;
@@ -168,10 +165,6 @@ button,
 
 
 
-.button--ripple-handler {
-	position: relative;
-}
-
 .button__label {
 	transition: transform var(--animation);
 	display: inline-block;
@@ -181,4 +174,6 @@ button,
 	vertical-align: top;
 	position: relative;
 	z-index: 1;
+
+	@include bold-text;
 }

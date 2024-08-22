@@ -24,35 +24,37 @@
 
 <body id="mode-manager" style="-display:none">
 	<section class="mode mode--items">
-		<div class="page page--items">
-			{% for item in items %}
-			<div class="item js-item" data-item-id="{{ item.id }}" data-item-price="{{ item.price }}">
-				<div class="item__counter js-item-counter">1</div>
-				<div class="item__photo">
-					<picture class="item-icon">
-						<img src="static/img/{{ item.image  }}">
-					</picture>
+		<div class="page">
+			<div class="page__items">
+				{% for item in items %}
+				<div class="item js-item" data-item-id="{{ item.id }}" data-item-price="{{ item.price }}">
+					<div class="item__counter js-item-counter">1</div>
+					<div class="item__photo">
+						<picture class="item-icon">
+							<img src="static/img/{{ item.image  }}">
+						</picture>
+					</div>
+					<div class="item__label">
+						<span class="item__title">{{ item.item }}</span>
+						<span class="item__price">₾{{ item.price }}</span>
+					</div>
+					<div class="item__buttons">
+						<button class="item__button--decrement js-item-decr-btn button ripple-wrapper">
+							<span class="button__label">Remove</span>
+							<span class="ripple-mask"><span class="ripple"></span></span>
+						</button>
+						<button class="item__button--increment js-item-incr-btn button ripple-wrapper">
+							<span class="button__label">Add</span>
+							<span class="ripple-mask"><span class="ripple"></span></span>
+						</button>
+					</div>
 				</div>
-				<div class="item__label">
-					<span class="item__title">{{ item.item }}</span>
-					<span class="item__price">₾{{ item.price }}</span>
-				</div>
-				<div class="item__buttons">
-					<button class="item__button--decrement js-item-decr-btn button button--ripple-handler">
-						<span class="button__label">Remove</span>
-						<span class="ripple-mask"><span class="ripple"></span></span>
-					</button>
-					<button class="item__button--increment js-item-incr-btn button button--ripple-handler">
-						<span class="button__label">Add</span>
-						<span class="ripple-mask"><span class="ripple"></span></span>
-					</button>
-				</div>
+				{% endfor %}
+				<div class="item item--shadow"></div>
+				<div class="item item--shadow"></div>
+				<div class="item item--shadow"></div>
+				<div class="item item--shadow"></div>
 			</div>
-			{% endfor %}
-			<div class="item item--shadow"></div>
-			<div class="item item--shadow"></div>
-			<div class="item item--shadow"></div>
-			<div class="item item--shadow"></div>
 		</div>
 	</section>
 	<section class="mode mode--order-overview">
@@ -62,21 +64,19 @@
 				<span class="page__edit js-order-edit">Изменить</span>
 			</div>
 
-			<div>
+			<div class="page__block">
 				{% for item in items %}
-				<div class="order-item js-order-item" data-item-id="{{ item.id }}">
-					<div class="order-item__photo">
-						<picture class="item-icon item-icon--order">
-							<img src="static/img/{{ item.image }}">
-						</picture>
+				<div class="list-item js-order-item" data-item-id="{{ item.id }}">
+					<div class="list-item__photo">
+						<img class="item-icon item-icon--order" src="static/img/{{ item.image }}">
 					</div>
-					<div class="order-item__label">
-						<div class="order-item__title">{{ item.item }}
-							<span class="order-item__counter"><span class="js-order-item__counter">1</span>x</span>
+					<div class="list-item__label">
+						<div class="list-item__title">{{ item.item }}
+							<span class="list-item__counter"><span class="js-order-item__counter">1</span>x</span>
 						</div>
-						<div class="order-item__description">{{ item.details }}</div>
+						<div class="list-item__description">{{ item.details }}</div>
 					</div>
-					<div class="order-item__price js-order-item__price">₾{{ item.price }}</div>
+					<div class="list-item__price js-order-item__price">₾{{ item.price }}</div>
 				</div>
 				{% endfor %}
 			</div>
@@ -95,17 +95,34 @@
 		<div class="page">
 			<div class="page__header-wrap">
 				<h2 class="page__header">Доставка</h2>
-				<span class="page__edit js-payment-edit">Назад</span>
+				<span class="page__edit js-delivery-edit">Назад</span>
 			</div>
-			<div>Ну тут параметры</div>
+			<div class="page__text">Выберите пункт выдачи заказа:</div>
+			<div class="page__block">
+				{% for point in pickup_points %}
+				<input type="radio" id="{{ point.pickup_point.id }}" name="radio-group" class="input input--radio">
+				<label for="{{ point.pickup_point.id }}" class="input__label">
+					<div class="list-item list-item--selected ripple-wrapper">
+						<div class="list-item__photo">
+							<img class="item-icon item-icon--order" src="static/img/default.png">
+						</div>
+						<div class="list-item__label">
+							<div class="list-item__title">
+								{{ point.pickup_point.address }}
+							</div>
+							<div class="list-item__description">{{ point.pickup_point.description }}</div>
 
-			<div class="text-field__wrap">
-				<textarea class="text-field js-order-comment-field block" rows="1"
-					placeholder="Комментарий к заказу…"></textarea>
-				<div class="text-field__hint">
-					Опишите что-нибудь.
-				</div>
+						</div>
+						<span class="ripple-mask"><span class="ripple"></span></span>
+					</div>
+				</label>
+				{% endfor %}
 			</div>
+
+			<div class="page__hint">
+				Пум-пум-пум.
+			</div>
+
 		</div>
 	</section>
 
@@ -115,8 +132,26 @@
 				<h2 class="page__header">Заказываю</h2>
 				<span class="page__edit js-payment-edit">Назад</span>
 			</div>
-			<div>
-				При оплате будет сгенерирован инвойс. Вы его оплатите и ожидайте заказа.
+			<div class="page__text">Выберите способ оплаты:</div>
+
+			<div class="page__block">
+				{% for method in payment_method %}
+				<input type="radio" id="{{ method.name }}" name="radio-group" class="input input--radio">
+				<label for="{{ method.name }}" class="input__label">
+					<div class="list-item list-item--selected ripple-wrapper">
+						<div class="list-item__label">
+							<div class="list-item__title">
+								{{ method.value }}
+							</div>
+						</div>
+						<span class="ripple-mask"><span class="ripple"></span></span>
+					</div>
+				</label>
+				{% endfor %}
+			</div>
+
+			<div class="page__hint">
+				Можете выбрать любой. В тестовом режиме создастся инвойс, вам надо будет прокликать его.
 			</div>
 		</div>
 	</section>
@@ -128,13 +163,13 @@
 	<script src="https://tg.dev/js/jquery.min.js"></script>
 	<script src="/static/assets/scripts.min.js"></script>
 	<script>
-		var userId = 0;//JSON.parse(new URLSearchParams(window.Telegram.WebApp.initData).get('user')).id;
-		// let initData = new URLSearchParams(window.Telegram.WebApp.initData);
-		var initDataHash = "";//initData.get('hash');
+		var userId = JSON.parse(new URLSearchParams(window.Telegram.WebApp.initData).get('user')).id;
+		let initData = new URLSearchParams(window.Telegram.WebApp.initData);
+		var initDataHash = initData.get('hash');
 
-		// initData.delete('hash');
-		// initData.sort();
-		var dataCheckString = ""; // initData.toString();
+		initData.delete('hash');
+		initData.sort();
+		var dataCheckString = initData.toString();
 
 		var cafe_api = `${window.location.origin}/api`;
 

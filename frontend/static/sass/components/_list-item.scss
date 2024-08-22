@@ -1,0 +1,40 @@
+.list-item {
+	display: none;
+	padding: 5px 20px 5px;
+
+}
+
+.list-item--selected {
+	display: flex;
+}
+
+.list-item__label {
+	flex-grow: 1;
+}
+
+.list-item__photo {
+	text-align: center;
+	width: 50px;
+	height: 50px;
+	margin-right: 11px;
+}
+
+.list-item__title {
+	@include title-text;
+	padding: 3px 0;
+}
+
+.list-item__counter {
+	color: var(--main-color);
+}
+
+.list-item__description {
+	@include hint-text;
+	color: var(--hint-color);
+	padding: 2px 0;
+}
+
+.list-item__price {
+	@include extra-text;
+	padding: 4px 0;
+}

@@ -13,6 +13,8 @@ from libs.hidden_client import (
     HiddenMenu,
     HiddenItem,
     OrderItem,
+    HiddenPickupPoint,
+    PaymentMethod,
 )
 
 from config import SERVER_URL
@@ -36,8 +38,15 @@ app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     menu = await HiddenMenu.get_items()
+    pickup_points = await HiddenPickupPoint.get_all()
     return templates.TemplateResponse(
-        "cafe.html", {"request": request, "items": menu.items()}
+        "cafe.html",
+        {
+            "request": request,
+            "items": menu.items(),
+            "pickup_points": pickup_points,
+            "payment_method": PaymentMethod,
+        },
     )
 
 

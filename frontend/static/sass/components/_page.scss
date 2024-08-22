@@ -1,12 +1,42 @@
 .page {
 	font-family: var(--default-font);
-	background-color: var(--bg-color);
+	// background-color: var(--bg-color);
 
 	height: auto;
 	overflow: hidden;
 }
 
-.page--items {
+
+.page__header-wrap {
+	padding: 21px 20px 14px;
+	display: flex;
+	align-items: center;
+
+	background-color: var(--bg-color);
+}
+
+.page__header {
+	font-size: 17px;
+	line-height: 21px;
+	text-transform: uppercase;
+	flex-grow: 1;
+	margin: 0;
+}
+
+.page__edit {
+	@include button-text;
+	color: var(--accent-color);
+	background-color: var(--bg-color);
+}
+
+.page__text {
+	@include title-text;
+	padding: 10px 20px 24px;
+	background-color: var(--bg-color);
+	// color: var(--hint-color);
+}
+
+.page__items {
 	display: flex;
 	flex-wrap: wrap;
 	align-content: flex-start;
@@ -22,23 +52,14 @@
 	}
 }
 
-.page__header-wrap {
-	padding: 21px 20px 14px;
-	display: flex;
-	align-items: center;
+.page__block {
+	background-color: var(--bg-color);
 }
 
-.page__header {
-	font-size: 17px;
-	line-height: 21px;
-	text-transform: uppercase;
-	flex-grow: 1;
-	margin: 0;
-}
 
-.page__edit {
-	font-size: 15px;
-	line-height: 18px;
-	font-weight: 500;
-	color: var(--accent-color);
+.page__hint {
+	@include hint-text;
+	padding: 10px 20px 24px;
+	color: var(--hint-color);
+	background-color: var(--bg-color);
 }

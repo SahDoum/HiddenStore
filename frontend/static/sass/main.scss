@@ -1,10 +1,12 @@
 @import 'variables';
+@import 'typo';
 
 @import 'components/base';
 @import 'components/mode';
 @import 'components/page';
 @import 'components/item';
-@import 'components/order-item';
+@import 'components/input';
+@import 'components/list-item';
 @import 'components/text-field';
 @import 'components/status';
 @import 'components/item-icon';

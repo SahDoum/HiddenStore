@@ -2,9 +2,9 @@ from enum import Enum
 
 
 class PaymentMethod(str, Enum):
-    CARD = "card"
-    CASH = "cash"
-    CRYPTO_INVOICE = "crypto_invoice"
+    CARD = "Картой"
+    CASH = "Наличными"
+    CRYPTO_INVOICE = "Крипто переводом"
 
 
 class PaymentStatus(str, Enum):

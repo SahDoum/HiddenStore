@@ -39,6 +39,8 @@ class Cafe {
 		$(".js-order-edit").on("click", this.eEditClicked.bind(this));
 		$(".js-payment-edit").on("click", this.ePaymentClicked.bind(this));
 		$(".js-status").on("click", this.eStatusClicked.bind(this));
+
+		$(".js-delivery-edit").on("click", this.eDeliveryEditClicked.bind(this));
 		// $(".js-item-cash-btn").on("click", this.ePayCash.bind(this));
 		// $(".js-item-card-btn").on("click", this.ePayCard.bind(this));
 
@@ -70,10 +72,17 @@ class Cafe {
 		this.statusManager.toggleMode(Modes.INITIAL);
 	}
 
+	eDeliveryEditClicked(e) {
+		e.preventDefault();
+
+		console.log("delivery back");
+		this.statusManager.toggleMode(Modes.ITEMS);
+	}
+
 	ePaymentClicked(e) {
 		e.preventDefault();
 		console.log("payment back");
-		this.statusManager.toggleMode(Modes.ITEMS);
+		this.statusManager.toggleMode(Modes.DELIVERY);
 	}
 
 	eStatusClicked() {

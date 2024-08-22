@@ -241,7 +241,7 @@ class APIClient:
     # Pickup Point methods
     async def create_pickup_point(self, pickup_point_data: PickupPointCreate) -> dict:
         response = await self.client.post(
-            "/pickup_points/",
+            "/pickuppoints/",
             json=pickup_point_data.dict(exclude_unset=True),
             headers=self._get_headers(),
         )
@@ -250,7 +250,15 @@ class APIClient:
 
     async def get_pickup_point_by_id(self, pickup_point_id: str) -> dict:
         response = await self.client.get(
-            f"/pickup_points/{pickup_point_id}",
+            f"/pickuppoints/{pickup_point_id}",
+            headers=self._get_headers(),
+        )
+        response.raise_for_status()
+        return response.json()
+
+    async def get_pickup_points(self) -> list[dict]:
+        response = await self.client.get(
+            f"/pickuppoints/",
             headers=self._get_headers(),
         )
         response.raise_for_status()
@@ -260,7 +268,7 @@ class APIClient:
         self, pickup_point_id: str, pickup_point_data: PickupPointUpdate
     ) -> dict:
         response = await self.client.put(
-            f"/pickup_points/{pickup_point_id}",
+            f"/pickuppoints/{pickup_point_id}",
             json=pickup_point_data.dict(exclude_unset=True),
             headers=self._get_headers(),
         )
@@ -269,7 +277,7 @@ class APIClient:
 
     async def delete_pickup_point(self, pickup_point_id: str) -> bool:
         response = await self.client.delete(
-            f"/pickup_points/{pickup_point_id}",
+            f"/pickuppoints/{pickup_point_id}",
             headers=self._get_headers(),
         )
         response.raise_for_status()

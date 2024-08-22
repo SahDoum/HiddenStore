@@ -49,7 +49,7 @@ export class Item {
 		const orderItemEl = item.getOrderItem();
 		const orderCounterEl = $(".js-order-item__counter", orderItemEl);
 		orderCounterEl.text(count ? count : 1);
-		orderItemEl.toggleClass("order-item--selected", count > 0);
+		orderItemEl.toggleClass("list-item--selected", count > 0);
 		const orderPriceEl = $(".js-order-item__price", orderItemEl);
 		const itemPrice = count * price;
 		orderPriceEl.text(formatPrice(itemPrice));

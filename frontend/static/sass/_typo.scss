@@ -1,0 +1,52 @@
+/** == Typography (_typo.scss) == **/
+@mixin body-text() {
+    font-family: $default-font;
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+}
+
+@mixin heading-text() {
+    font-family: $default-font;
+    font-size: 17px;
+    line-height: 21px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+@mixin button-text() {
+    font-family: $default-font;
+    font-size: 15px;
+    line-height: 18px;
+    font-weight: 500;
+}
+
+@mixin bold-text() {
+    font-family: $default-font;
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: 800;
+}
+
+@mixin title-text() {
+    font-family: $default-font;
+    font-size: 15px;
+    line-height: 18px;
+    font-weight: 700;
+}
+
+@mixin extra-text() {
+    font-family: $default-font;
+    font-size: 14px;
+    line-height: 17px;
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+}
+
+@mixin hint-text() {
+    font-family: $default-font;
+    font-size: 14px;
+    line-height: 17px;
+    -webkit-font-smoothing: antialiased;
+}
