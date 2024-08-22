@@ -14,7 +14,6 @@ from libs.hidden_client import (
 )
 
 
-from data import PickupPointState
 from utils import get_orders_page, get_order_messages
 from keyboards import (
     order_keyboard,
@@ -44,38 +43,6 @@ async def cmd_orders(message: types.Message):
     logger.error(msg)
 
     await message.reply(msg, reply_markup=keyboard)
-
-
-# /create_pickup_point command handler
-@dp.message(Command("create_pickup_point"))
-async def cmd_create_pickup_point(message: types.Message, state: FSMContext):
-    await message.answer("Введите адрес пункта самовывоза:")
-    await state.set_state(PickupPointState.address)
-
-
-# Handler to capture the address input
-@dp.message(PickupPointState.address)
-async def process_address(message: types.Message, state: FSMContext):
-    await state.update_data(address=message.text)
-    await message.answer("Введите описание пункта самовывоза:")
-    await state.set_state(PickupPointState.description)
-
-
-# Handler to capture the description input
-@dp.message(PickupPointState.description)
-async def process_description(message: types.Message, state: FSMContext):
-    user_data = await state.get_data()
-    address = user_data.get("address")
-    await state.clear()
-    description = message.text
-
-    point = await HiddenPickupPoint.create(address=address, description=description)
-
-    await message.answer(
-        f"Пункт самовывоза создан:\n\nАдрес: {point.pickup_point.address}\nОписание: {point.pickup_point.description}"
-    )
-
-    # Finish the state
 
 
 # /delete_pickup_point command handler

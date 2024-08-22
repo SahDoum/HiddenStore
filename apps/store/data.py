@@ -14,9 +14,3 @@ class PageCallback(CallbackData, prefix="page"):
 # Callback data for pickup point deletion
 class PickupPointDeleteCallback(CallbackData, prefix="delete_pickup_point"):
     pickup_point_id: str
-
-
-# Define states for the scenario
-class PickupPointState(StatesGroup):
-    address = State()
-    description = State()
