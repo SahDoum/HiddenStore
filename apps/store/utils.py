@@ -16,11 +16,11 @@ def get_orders_page(orders: list, page: int) -> list:
     return orders[start:end]
 
 
-async def get_order_messages(orders_page: list) -> list[str]:
-    order_msgs = []
-    for hidden_order in orders_page:
-        hidden_user = await HiddenUser.get_or_create(id=hidden_order.order.user)
-        order_msgs.append(
+async def get_order_messages(page: list, object_type) -> list[str]:
+    obj_msgs = []
+    for hidden_order in page:
+        hidden_user = await object_type.get_or_create(id=hidden_order.order.user)
+        obj_msgs.append(
             render_template(
                 "order_info_store_short.txt",
                 order=hidden_order.order,
@@ -28,4 +28,4 @@ async def get_order_messages(orders_page: list) -> list[str]:
                 user=hidden_user.user,
             )
         )
-    return order_msgs
+    return obj_msgs

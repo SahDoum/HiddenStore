@@ -1,17 +1,13 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram import F, types
-from aiogram.types.callback_query import CallbackQuery
 from aiogram.filters.callback_data import CallbackData
-
 from aiogram import Dispatcher
 
 import logging
 
 
 from init import dp, bot
-from data import PageCallback
-
-from data import PageCallback
+from paginator_view import PageCallback
 
 
 logging.basicConfig(level=logging.INFO)
@@ -24,6 +20,7 @@ class ObjectShowView:
     def __init__(self, object_type, prefix: str, dp: Dispatcher):
         self.object_type = object_type
         self.dp = dp
+        self.prefix = prefix
 
         self.methods: dict[str, str] = {}
 
@@ -42,7 +39,6 @@ class ObjectShowView:
         return decorator
 
     def register_start(self, func):
-
         @dp.callback_query(self.callback.filter(F.action == self.DefaultStartFilter))
         async def show_func(
             callback_query: types.CallbackQuery, callback_data: self.callback
@@ -74,7 +70,10 @@ class ObjectShowView:
                 callback_data=self.callback(action=name, object_id=object_id),
             )
         # rewrite
-        builder.button(text="<< К списку заказов", callback_data=PageCallback(page=0))
+        builder.button(
+            text="<< К списку заказов",
+            callback_data=PageCallback(page=0, obj_prefix=self.prefix),
+        )
         # builder.adjust(-1, 1)
 
         return builder.as_markup()

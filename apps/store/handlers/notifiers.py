@@ -1,12 +1,12 @@
 import logging
 
-from libs.hidden_client import HiddenUser, HiddenOrder
+from libs.hidden_client import HiddenOrder
 from init import bot, redis_client
 from config import KITCHEN_TG_ID
 from init import render_template
 
 from keyboards import order_keyboard
-from handlers.callbacks import orders_view
+from handlers.orders import orders_view
 
 
 logging.basicConfig(level=logging.INFO)

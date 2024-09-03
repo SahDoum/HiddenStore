@@ -2,8 +2,9 @@ import asyncio
 
 from init import dp, bot
 from handlers.notifiers import register_notifiers
-import handlers.callbacks
-import handlers.commands
+import handlers.orders
+import handlers.items
+import handlers.pickuploints
 
 
 async def main():
