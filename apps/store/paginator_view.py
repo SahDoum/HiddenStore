@@ -5,8 +5,8 @@ from aiogram.filters.callback_data import CallbackData
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from config import ORDERS_PER_PAGE
-from utils import get_orders_page
-from init import dp, bot
+from utils import get_page
+from init import bot
 
 
 class PageCallback(CallbackData, prefix="page"):
@@ -16,12 +16,12 @@ class PageCallback(CallbackData, prefix="page"):
 
 def orders_pagination_keyboard(orders: list, page: int, prefix: str, callback):
     builder = InlineKeyboardBuilder()
-    orders_page = get_orders_page(orders, page)
+    obj_page = get_page(orders, page)
 
-    for hidden_order in orders_page:
+    for item in obj_page:
         builder.button(
-            text=hidden_order.order.id,
-            callback_data=callback(action="show", object_id=hidden_order.order.id),
+            text=item.data.id,
+            callback_data=callback(action="show", object_id=item.data.id),
         )
 
     navigation_builder = InlineKeyboardBuilder()
@@ -52,10 +52,10 @@ class Paginator:
     ) -> None:
         self.object_type = object_type
         self.object_view = object_view
+        self.prefix = prefix
         self.item_description_func = item_description_func
         self.command = command
         self.dp = dp
-        self.prefix = prefix
 
         self.register_item_description(item_description_func)
         self.init_page_callback()
@@ -76,7 +76,7 @@ class Paginator:
         return func
 
     def init_page_callback(self):
-        @dp.callback_query(PageCallback.filter(F.obj_prefix == self.prefix))
+        @self.dp.callback_query(PageCallback.filter(F.obj_prefix == self.prefix))  #
         async def process_callback_pagination(
             callback_query: types.CallbackQuery, callback_data: PageCallback
         ):
@@ -98,8 +98,8 @@ class Paginator:
             )
 
     async def render_page_and_keyboard(self, objects, page: int):
-        orders_page = get_orders_page(objects, page)
-        msg = await self.item_description_func(orders_page)
+        obj_page = get_page(objects, page)
+        msg = await self.item_description_func(obj_page)
 
         keyboard = orders_pagination_keyboard(
             objects, page, self.prefix, self.object_view.callback

@@ -10,10 +10,10 @@ from init import render_template
 from config import ORDERS_PER_PAGE
 
 
-def get_orders_page(orders: list, page: int) -> list:
+def get_page(items: list, page: int) -> list:
     start = page * ORDERS_PER_PAGE
     end = start + ORDERS_PER_PAGE
-    return orders[start:end]
+    return items[start:end]
 
 
 async def get_order_messages(page: list, object_type) -> list[str]:

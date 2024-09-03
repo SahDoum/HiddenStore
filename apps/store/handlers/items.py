@@ -36,6 +36,16 @@ async def description_func(items: list[HiddenItem]):
 
 item_show_view = ObjectShowView(HiddenItem, "item", dp)
 
+items_callback = item_show_view.callback
+
+
+@item_show_view.register_start
+async def order_show_message(hidden_item):
+    msg = f"{hidden_item.data}"
+
+    return msg
+
+
 orders_paginator = Paginator(
     HiddenItem, item_show_view, "item", description_func, "items", dp
 )
