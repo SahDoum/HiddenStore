@@ -5,7 +5,7 @@ from aiogram import Dispatcher
 from aiogram.filters import Command
 
 
-class ObjectCreateFabric:
+class ObjectCreateView:
     def __init__(self, model, fields, command_name, dp: Dispatcher):
         self.model = model
         self.fields = fields

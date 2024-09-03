@@ -1,10 +1,4 @@
 from aiogram.filters.callback_data import CallbackData
-from aiogram.fsm.state import State, StatesGroup
-
-
-class OrderCallback(CallbackData, prefix="order"):
-    action: str
-    order_id: str
 
 
 class PageCallback(CallbackData, prefix="page"):

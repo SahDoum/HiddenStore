@@ -39,7 +39,6 @@ async def cmd_start(message: types.Message):
 @dp.message(Command("about"))
 async def cmd_about(message: types.Message):
     telegram_id = str(message.from_user.id)
-    logger.error(telegram_id)
     user = await HiddenUser.get_or_create(telegram_id=telegram_id)
     if not user:
         await message.reply(MESSAGES["error_fetching_user"])

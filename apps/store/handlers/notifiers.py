@@ -6,6 +6,7 @@ from config import KITCHEN_TG_ID
 from init import render_template
 
 from keyboards import order_keyboard
+from handlers.callbacks import orders_view
 
 
 logging.basicConfig(level=logging.INFO)
@@ -15,7 +16,6 @@ logger = logging.getLogger(__name__)
 async def on_create(user_id, order_id):
     await bot.send_message(KITCHEN_TG_ID, f"Новый заказ. Id: {order_id}")
     hidden_order = await HiddenOrder.get(order_id)
-    logger.error(hidden_order)
     if hidden_order is None:
         await bot.send_message(KITCHEN_TG_ID, "заказ не сфетчился")
         return
@@ -23,7 +23,7 @@ async def on_create(user_id, order_id):
     msg = render_template(
         "order_info.txt", order=hidden_order.order, items=hidden_order.items()
     )
-    keyboard = order_keyboard(hidden_order.order)
+    keyboard = order_keyboard(hidden_order.order, orders_view.callback)
 
     await bot.send_message(KITCHEN_TG_ID, msg, reply_markup=keyboard)
 

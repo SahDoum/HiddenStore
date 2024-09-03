@@ -101,7 +101,6 @@ async def update_order(order_id: str, order_update: schemas.OrderUpdate):
     order = await OrderAPI.update(order_id=order_id, data=order_update)
     if order is None:
         raise HTTPException(status_code=404, detail="Order not found")
-    logger.error("UPDATE ORDER NOTIFY")
     await notify("update", order_id=order.id)
     return order
 

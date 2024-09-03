@@ -2,8 +2,6 @@ import logging
 from aiogram import types
 from aiogram.filters import Command
 
-from aiogram.fsm.context import FSMContext
-
 from libs.hidden_client import (
     HiddenUser,
     HiddenOrder,
@@ -16,15 +14,40 @@ from libs.hidden_client import (
 
 from utils import get_orders_page, get_order_messages
 from keyboards import (
-    order_keyboard,
     orders_pagination_keyboard,
     delete_pickup_point_keyboard,
 )
 from init import dp
 
+from handlers.callbacks import orders_view
+from object_create_view import ObjectCreateView
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+pickup_point_factory = ObjectCreateView(
+    HiddenPickupPoint,
+    fields={
+        "address": "Введите адрес пункта самовывоза:",
+        "description": "Введите описание пункта самовывоза:",
+    },
+    command_name="create_pickup_point",
+    dp=dp,
+)
+
+menu_item_factory = ObjectCreateView(
+    HiddenItem,
+    fields={
+        "item": "Введите название товара:",
+        "details": "Введите описание:",
+        "price": "Введите стоимость:",
+        "unit": "Введите, в чем измеряется (шт, гр):",
+    },
+    command_name="create_item",
+    dp=dp,
+)
 
 
 @dp.message(Command("orders"))
@@ -39,7 +62,7 @@ async def cmd_orders(message: types.Message):
 
     msg = "Заказы: \n\n" + "\n".join(order_msgs)
 
-    keyboard = orders_pagination_keyboard(orders, 0)
+    keyboard = orders_pagination_keyboard(orders, 0, orders_view.callback)
     logger.error(msg)
 
     await message.reply(msg, reply_markup=keyboard)

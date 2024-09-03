@@ -4,28 +4,28 @@ from libs.models.models import Order
 from config import ORDERS_PER_PAGE
 from utils import get_orders_page
 
-from data import OrderCallback, PageCallback, PickupPointDeleteCallback
+from data import PageCallback, PickupPointDeleteCallback
 
 
-def order_keyboard(order: Order):
+def order_keyboard(order: Order, callback):
     builder = InlineKeyboardBuilder()
 
     builder.button(
         "Отгрузил, пусть приходит ->",
-        callback_data=OrderCallback(order_id=order.id, action="packed"),
+        callback_data=callback(object_id=order.id, action="packed"),
     )
 
     return builder.as_markup()
 
 
-def orders_pagination_keyboard(orders: list, page: int):
+def orders_pagination_keyboard(orders: list, page: int, callback):
     builder = InlineKeyboardBuilder()
     orders_page = get_orders_page(orders, page)
 
     for hidden_order in orders_page:
         builder.button(
             text=hidden_order.order.id,
-            callback_data=OrderCallback(order_id=hidden_order.order.id, action="show"),
+            callback_data=callback(action="show", object_id=hidden_order.order.id),
         )
 
     navigation_builder = InlineKeyboardBuilder()
@@ -39,26 +39,6 @@ def orders_pagination_keyboard(orders: list, page: int):
         )
 
     builder.attach(navigation_builder)
-
-    return builder.as_markup()
-
-
-def order_edit_keyboard(order: Order):
-    builder = InlineKeyboardBuilder()
-
-    builder.button(
-        text="Отгрузил", callback_data=OrderCallback(order_id=order.id, action="packed")
-    )
-    builder.button(
-        text="Удалить", callback_data=OrderCallback(order_id=order.id, action="delete")
-    )
-    builder.button(
-        text="Открыть чат",
-        callback_data=OrderCallback(order_id=order.id, action="suport"),
-    )
-    builder.button(text="<< К списку заказов", callback_data=PageCallback(page=0))
-
-    builder.adjust(3, 1)
 
     return builder.as_markup()
 
