@@ -21,9 +21,9 @@ async def on_create(user_id, order_id):
         return
 
     msg = render_template(
-        "order_info.txt", order=hidden_order.order, items=hidden_order.items()
+        "order_info.txt", order=hidden_order.data, items=hidden_order.items()
     )
-    keyboard = order_keyboard(hidden_order.order, orders_view.callback)
+    keyboard = order_keyboard(hidden_order.data, orders_view.callback)
 
     await bot.send_message(KITCHEN_TG_ID, msg, reply_markup=keyboard)
 

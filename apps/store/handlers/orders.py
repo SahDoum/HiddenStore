@@ -23,11 +23,11 @@ async def order_show_message(hidden_order):
     if hidden_order is None:
         return f"Заказ потерялся. Что-то пошло не так"
 
-    hidden_user = await HiddenUser.get_or_create(id=hidden_order.order.user)
+    hidden_user = await HiddenUser.get_or_create(id=hidden_order.data.user)
 
     msg = render_template(
         "order_info.txt",
-        order=hidden_order.order,
+        order=hidden_order.data,
         items=hidden_order.items(),
         user=hidden_user.user,
     )
@@ -65,11 +65,11 @@ def order_support(callback_query: types.CallbackQuery, callback_data: orders_cal
 async def description_func(orders):
     order_msgs = []
     for hidden_order in orders:
-        hidden_user = await HiddenUser.get_or_create(id=hidden_order.order.user)
+        hidden_user = await HiddenUser.get_or_create(id=hidden_order.data.user)
         order_msgs.append(
             render_template(
                 "order_info_store_short.txt",
-                order=hidden_order.order,
+                order=hidden_order.data,
                 items=hidden_order.items(),
                 user=hidden_user.user,
             )

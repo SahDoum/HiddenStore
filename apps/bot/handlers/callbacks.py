@@ -37,8 +37,8 @@ async def process_callback(
         await callback_query.answer(f"Не получилось создать пользователя")
         return
 
-    await callback_query.answer(f"Вы выбрали {item.item.item}")
-    order = await HiddenOrder.create([(item.item, 1.0)], item.item.price, user)
+    await callback_query.answer(f"Вы выбрали {item.data.item}")
+    order = await HiddenOrder.create([(item.data, 1.0)], item.data.price, user)
 
     if not order:
         await callback_query.answer(f"Заказ не создался")

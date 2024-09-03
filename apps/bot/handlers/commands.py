@@ -63,7 +63,7 @@ async def cmd_order(message: types.Message):
         ),
     ]
     order = await HiddenOrder.create(items=items, price=100, user=user)
-    await message.reply(MESSAGES["order_success"].format(order_id=order.order.id))
+    await message.reply(MESSAGES["order_success"].format(order_id=order.data.id))
 
 
 @dp.message(Command("orders"))
@@ -79,7 +79,7 @@ async def cmd_orders(message: types.Message):
         for order in orders:
             hidden_order = HiddenOrder(order, user)
             msg = render_template(
-                "order_info.txt", order=hidden_order.order, items=hidden_order.items()
+                "order_info.txt", order=hidden_order.data, items=hidden_order.items()
             )
             await message.reply(msg)
             return
@@ -111,11 +111,11 @@ async def cmd_create(message: types.Message):
         # Respond to the user
         await message.reply(
             f"Item created successfully!\n"
-            f"ID: {created_item.item.id}\n"
-            f"Item: {created_item.item.item}\n"
-            f"Details: {created_item.item.details}\n"
-            f"Price: {created_item.item.price}\n"
-            f"Unit: {created_item.item.unit}",
+            f"ID: {created_item.data.id}\n"
+            f"Item: {created_item.data.item}\n"
+            f"Details: {created_item.data.details}\n"
+            f"Price: {created_item.data.price}\n"
+            f"Unit: {created_item.data.unit}",
         )
     except ValueError:
         await message.reply(

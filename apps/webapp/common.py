@@ -38,9 +38,9 @@ async def make_items(items: dict[str, float]) -> list[tuple[OrderItem, float]]:
     for item_id, count in items.items():
         try:
             hidden_item = await HiddenItem.get(item_id)
-            if hidden_item is None or hidden_item.item is None:
+            if hidden_item is None or hidden_item.data is None:
                 raise HTTPException(status_code=400, detail=f"Item {item_id} not found")
-            res.append((hidden_item.item, count))
+            res.append((hidden_item.data, count))
         except Exception as e:
             raise e
     return res

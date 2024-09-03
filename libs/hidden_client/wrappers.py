@@ -239,7 +239,7 @@ class HiddenDeliveryDetails:
 
 class HiddenOrder:
     def __init__(self, order: Order, user: Optional[HiddenUser] = None):
-        self.order = order
+        self.data = order
         self.user = user
 
     @classmethod
@@ -294,10 +294,10 @@ class HiddenOrder:
                 status=status,
             )
             updated_order = await api_client.update_order(
-                order_id=self.order.id, order_update=order_update
+                order_id=self.data.id, order_update=order_update
             )
-        self.order = Order.parse_obj(updated_order)
-        return self.order
+        self.data = Order.parse_obj(updated_order)
+        return self.data
 
     @staticmethod
     def item_to_str(item: OrderItem) -> str:
@@ -309,7 +309,7 @@ class HiddenOrder:
         return OrderItem.parse_obj(json.loads(item_str))
 
     def items(self) -> list[tuple[OrderItem, float]]:
-        return [(self.str_to_item(item), count) for item, count in self.order.items]
+        return [(self.str_to_item(item), count) for item, count in self.data.items]
 
     @classmethod
     async def list(cls):
@@ -323,7 +323,7 @@ class HiddenOrder:
     async def delivery(self) -> Optional[HiddenDeliveryDetails]:
         async with APIClient() as api_client:
             try:
-                delivery = await api_client.get_delivery_details_by_id(self.order.id)
+                delivery = await api_client.get_delivery_details_by_id(self.data.id)
                 return HiddenDeliveryDetails(DeliveryDetails.parse_obj(delivery))
             except:
                 return None
@@ -331,7 +331,7 @@ class HiddenOrder:
     async def payment(self) -> Optional[HiddenPaymentIntent]:
         async with APIClient() as api_client:
             try:
-                payment = await api_client.get_payment_intent_by_id(self.order.id)
+                payment = await api_client.get_payment_intent_by_id(self.data.id)
                 return HiddenPaymentIntent(PaymentIntent.parse_obj(payment))
             except:
                 return None
@@ -339,7 +339,7 @@ class HiddenOrder:
 
 class HiddenItem:
     def __init__(self, item: OrderItem):
-        self.item = item
+        self.data = item
 
     @classmethod
     async def create(
@@ -358,17 +358,27 @@ class HiddenItem:
             item_data = await api_client.get_menu_item(item_id)
         return cls(OrderItem.parse_obj(item_data)) if item_data else None
 
+    @classmethod
+    async def list(cls) -> list["HiddenItem"]:
+        async with APIClient() as api_client:
+            try:
+                items = await api_client.get_menu_items()
+                hidden_items = [HiddenItem(OrderItem.parse_obj(item)) for item in items]
+                return hidden_items
+            except:
+                return []
+
     async def update(self, item_data: OrderItemUpdate) -> bool:
         async with APIClient() as api_client:
-            updated_item = await api_client.update_menu_item(self.item.id, item_data)
+            updated_item = await api_client.update_menu_item(self.data.id, item_data)
         if updated_item:
-            self.item = OrderItem.parse_obj(updated_item)
+            self.data = OrderItem.parse_obj(updated_item)
             return True
         return False
 
     async def delete(self) -> bool:
         async with APIClient() as api_client:
-            success = await api_client.delete_menu_item(self.item.id)
+            success = await api_client.delete_menu_item(self.data.id)
         return success
 
 
@@ -386,7 +396,7 @@ class HiddenMenu:
                 return cls([])
 
     def items(self) -> list[OrderItem]:
-        return [item.item for item in self.hidden_items]
+        return [item.data for item in self.hidden_items]
 
     # async def update_items(self) -> bool:
     #     async with APIClient() as api_client:

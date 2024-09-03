@@ -29,7 +29,7 @@ menu_item_factory = ObjectCreateView(
 async def description_func(items: list[HiddenItem]):
     order_msgs = []
     for hidden_item in items:
-        order_msgs.append(f"{hidden_item.item.item}")
+        order_msgs.append(f"{hidden_item.data.item}")
     msg = "Пункты меню: \n\n" + "\n".join(order_msgs)
     return msg
 
