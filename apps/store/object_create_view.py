@@ -6,7 +6,9 @@ from aiogram.filters import Command
 
 
 class ObjectCreateView:
-    def __init__(self, model, fields, command_name, dp: Dispatcher):
+    fields: dict[str, str]
+
+    def __init__(self, model, fields: dict[str, str], command_name, dp: Dispatcher):
         self.model = model
         self.fields = fields
         self.command_name = command_name
@@ -53,7 +55,7 @@ class ObjectCreateView:
         await state.set_state(self.state_class.__dict__[first_field])
         await message.answer(self.fields[first_field])
 
-    def create_field_handler(self, field):
+    def create_field_handler(self, field: str):
         async def process_field(message: types.Message, state: FSMContext):
             await state.update_data({field: message.text})
             fields_list = list(self.fields.keys())

@@ -1,5 +1,6 @@
 import logging
 from aiogram import types
+from aiogram.fsm.context import FSMContext
 
 
 from libs.hidden_client import HiddenUser, HiddenOrder
@@ -29,22 +30,28 @@ async def order_show_message(hidden_order):
         "order_info.txt",
         order=hidden_order.data,
         items=hidden_order.items(),
-        user=hidden_user.user,
+        user=hidden_user.data,
     )
 
     return msg
 
 
-@orders_view.register("delete", "Удалить")
+@orders_view.register_callback("delete", "Удалить")
 def order_delete_message(
-    callback_query: types.CallbackQuery, callback_data: orders_callback
+    callback_query: types.CallbackQuery,
+    callback_data: orders_callback,
+    state: FSMContext,
+    view: ObjectShowView,
 ):
     pass
 
 
-@orders_view.register("packed", "Запаковать")
+@orders_view.register_callback("packed", "Запаковать")
 async def process_callback(
-    callback_query: types.CallbackQuery, callback_data: orders_callback
+    callback_query: types.CallbackQuery,
+    callback_data: orders_callback,
+    state: FSMContext,
+    view: ObjectShowView,
 ):
     hidden_order = await HiddenOrder.get(callback_data.object_id)
 
@@ -57,8 +64,13 @@ async def process_callback(
     await callback_query.message.reply("Запаковали!")
 
 
-@orders_view.register("suport", "Открыть чат")
-def order_support(callback_query: types.CallbackQuery, callback_data: orders_callback):
+@orders_view.register_callback("suport", "Открыть чат")
+def order_support(
+    callback_query: types.CallbackQuery,
+    callback_data: orders_callback,
+    state: FSMContext,
+    view: ObjectShowView,
+):
     pass
 
 
@@ -71,7 +83,7 @@ async def description_func(orders):
                 "order_info_store_short.txt",
                 order=hidden_order.data,
                 items=hidden_order.items(),
-                user=hidden_user.user,
+                user=hidden_user.data,
             )
         )
     msg = "Заказы: \n\n" + "\n".join(order_msgs)
