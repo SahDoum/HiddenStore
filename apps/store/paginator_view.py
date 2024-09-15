@@ -14,13 +14,16 @@ class PageCallback(CallbackData, prefix="page"):
     obj_prefix: str
 
 
-def orders_pagination_keyboard(orders: list, page: int, prefix: str, callback):
+def orders_pagination_keyboard(
+    orders: list, page: int, prefix: str, first_index: int, callback
+):
     builder = InlineKeyboardBuilder()
     obj_page = get_page(orders, page)
 
     for item in obj_page:
+        first_index += 1
         builder.button(
-            text=item.data.id,
+            text=f"{first_index}",
             callback_data=callback(action="show", object_id=item.data.id),
         )
 
@@ -99,10 +102,11 @@ class Paginator:
 
     async def render_page_and_keyboard(self, objects, page: int):
         obj_page = get_page(objects, page)
-        msg = await self.item_description_func(obj_page)
+        first_index = page * ORDERS_PER_PAGE
+        msg = await self.item_description_func(obj_page, first_index)
 
         keyboard = orders_pagination_keyboard(
-            objects, page, self.prefix, self.object_view.callback
+            objects, page, self.prefix, first_index, self.object_view.callback
         )
 
         return msg, keyboard

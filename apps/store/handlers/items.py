@@ -30,10 +30,11 @@ menu_item_factory = ObjectCreateView(
 )
 
 
-async def description_func(items: list[HiddenItem]):
+async def description_func(items: list[HiddenItem], first_index: int):
     order_msgs = []
     for hidden_item in items:
-        order_msgs.append(f"{hidden_item.data.item}")
+        first_index += 1
+        order_msgs.append(f"{first_index}. {hidden_item.data.item}")
     msg = "Пункты меню: \n\n" + "\n".join(order_msgs)
     return msg
 

@@ -57,7 +57,9 @@ class UserAPI:
     @staticmethod
     async def get_all() -> list[User]:
         async with await get_session() as session:
-            result = await session.execute(select(User))
+            result = await session.execute(
+                select(User).order_by(User.timestamp_created.desc())
+            )
             return list(result.scalars().all())
 
     @staticmethod
@@ -132,7 +134,9 @@ class OrderAPI:
     @staticmethod
     async def get_all() -> list[Order]:
         async with await get_session() as session:
-            result = await session.execute(select(Order))
+            result = await session.execute(
+                select(Order).order_by(Order.timestamp_created.desc())
+            )
             return list(result.scalars().all())
 
     @staticmethod
@@ -198,7 +202,9 @@ class ItemsAPI:
     @staticmethod
     async def get_all() -> list[OrderItem]:
         async with await get_session() as session:
-            result = await session.execute(select(OrderItem))
+            result = await session.execute(
+                select(OrderItem).order_by(OrderItem.timestamp_created.desc())
+            )
             return list(result.scalars().all())
 
     @staticmethod
@@ -252,7 +258,9 @@ class PickupPointAPI:
     @staticmethod
     async def get_all() -> list[PickupPoint]:
         async with await get_session() as session:
-            result = await session.execute(select(PickupPoint))
+            result = await session.execute(
+                select(PickupPoint).order_by(PickupPoint.timestamp_created.desc())
+            )
             return list(result.scalars().all())
 
     @staticmethod
@@ -304,7 +312,9 @@ class PaymentIntentAPI:
     @staticmethod
     async def get_all() -> list[PaymentIntent]:
         async with await get_session() as session:
-            result = await session.execute(select(PaymentIntent))
+            result = await session.execute(
+                select(PaymentIntent).order_by(PaymentIntent.timestamp_created.desc())
+            )
             return list(result.scalars().all())
 
     @staticmethod
@@ -359,7 +369,11 @@ class DeliveryDetailsAPI:
     @staticmethod
     async def get_all() -> list[DeliveryDetails]:
         async with await get_session() as session:
-            result = await session.execute(select(DeliveryDetails))
+            result = await session.execute(
+                select(DeliveryDetails).order_by(
+                    DeliveryDetails.timestamp_created.desc()
+                )
+            )
             return list(result.scalars().all())
 
     @staticmethod

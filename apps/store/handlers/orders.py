@@ -74,12 +74,14 @@ def order_support(
     pass
 
 
-async def description_func(orders):
+async def description_func(orders, first_index):
     order_msgs = []
     for hidden_order in orders:
+        first_index += 1
         hidden_user = await HiddenUser.get_or_create(id=hidden_order.data.user)
         order_msgs.append(
-            render_template(
+            f"{first_index}."
+            + render_template(
                 "order_info_store_short.txt",
                 order=hidden_order.data,
                 items=hidden_order.items(),
