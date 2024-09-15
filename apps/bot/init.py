@@ -1,5 +1,4 @@
 import redis.asyncio as redis
-from jinja2 import Environment, FileSystemLoader
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties

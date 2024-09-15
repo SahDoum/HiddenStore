@@ -43,7 +43,7 @@ async def cmd_about(message: types.Message):
     if not user:
         await message.reply(MESSAGES["error_fetching_user"])
         return
-    msg = render_template("user_info.txt", user=user.user)
+    msg = render_template("user_info.txt", user=user.data)
     await message.reply(msg)
 
 

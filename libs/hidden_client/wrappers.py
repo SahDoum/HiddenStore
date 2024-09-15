@@ -1,6 +1,10 @@
 import logging
 
-from typing import Optional, List
+from typing import Optional, List, Any
+from typing_extensions import Self
+
+from abc import ABC, abstractmethod
+
 import json
 import datetime
 
@@ -38,9 +42,41 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class HiddenUser:
+class HiddenWrapper(ABC):
+    data: Any
+
+    @classmethod
+    @abstractmethod
+    async def list(cls) -> list[Self]:
+        pass
+
+    @classmethod
+    @abstractmethod
+    async def get(cls, id: Optional[str] = None, *args, **kwargs) -> Self:
+        pass
+
+    @classmethod
+    @abstractmethod
+    async def create(cls, id: Optional[str] = None, *args, **kwargs) -> Self:
+        pass
+
+    @classmethod
+    @abstractmethod
+    async def get_or_create(cls, id: Optional[str] = None, *args, **kwargs) -> Self:
+        pass
+
+    @abstractmethod
+    async def update(self, data: Any) -> bool:
+        pass
+
+    @abstractmethod
+    async def delete(self) -> bool:
+        pass
+
+
+class HiddenUser(HiddenWrapper):
     def __init__(self, user: User):
-        self.user = user
+        self.data = user
 
     @classmethod
     async def get_or_create(
@@ -48,7 +84,7 @@ class HiddenUser:
         id: Optional[str] = None,
         telegram_id: Optional[str] = None,
         name: Optional[str] = None,
-    ):
+    ) -> Self:
         async with APIClient() as api_client:
             try:
                 user = None
@@ -67,23 +103,31 @@ class HiddenUser:
             finally:
                 return cls(User.parse_obj(user))
 
+    async def update(self, data: Any, *args, **kwargs) -> bool:
+        # Update logic for HiddenUser (if needed)
+        return False
+
+    async def delete(self) -> bool:
+        # Delete logic for HiddenUser (if needed)
+        return False
+
     async def get_orders(self) -> List[Order]:
         async with APIClient() as api_client:
             try:
-                orders = await api_client.get_orders_by_user(user_id=self.user.id)
+                orders = await api_client.get_orders_by_user(user_id=self.data.id)
                 return [Order.parse_obj(order) for order in orders]
             except:
                 return []
 
 
-class HiddenPickupPoint:
+class HiddenPickupPoint(HiddenWrapper):
     def __init__(self, pickup_point: PickupPoint):
-        self.pickup_point = pickup_point
+        self.data = pickup_point
 
     @classmethod
     async def create(
         cls, address: Optional[str], description: Optional[str] = None
-    ) -> "HiddenPickupPoint":
+    ) -> Self:
         async with APIClient() as api_client:
             pickup_point_data = PickupPointCreate(
                 address=address, description=description
@@ -94,48 +138,50 @@ class HiddenPickupPoint:
         return cls(PickupPoint.parse_obj(created_pickup_point))
 
     @classmethod
-    async def get(cls, pickup_point_id: str) -> Optional["HiddenPickupPoint"]:
+    async def get(cls, pickup_point_id: str) -> Optional[Self]:
         async with APIClient() as api_client:
             pickup_point_data = await api_client.get_pickup_point_by_id(pickup_point_id)
-        return (
-            cls(PickupPoint.parse_obj(pickup_point_data)) if pickup_point_data else None
-        )
+        if not pickup_point_data:
+            return None
+        return cls(PickupPoint.parse_obj(pickup_point_data))
 
     @classmethod
-    async def get_all(cls) -> list["HiddenPickupPoint"]:
-        res: list["HiddenPickupPoint"] = []
-
+    async def list(cls) -> List[Self]:
+        res: list[Self] = []
         async with APIClient() as api_client:
             pickup_points = await api_client.get_pickup_points()
         for point in pickup_points:
-            res.append(HiddenPickupPoint(PickupPoint.parse_obj(point)))
-
+            res.append(cls(PickupPoint.parse_obj(point)))
         return res
 
     async def update(self, pickup_point_data: PickupPointUpdate) -> bool:
         async with APIClient() as api_client:
             updated_pickup_point = await api_client.update_pickup_point(
-                self.pickup_point.id, pickup_point_data
+                self.data.id, pickup_point_data
             )
         if updated_pickup_point:
-            self.pickup_point = PickupPoint.parse_obj(updated_pickup_point)
+            self.data = PickupPoint.parse_obj(updated_pickup_point)
             return True
         return False
 
     async def delete(self) -> bool:
         async with APIClient() as api_client:
-            success = await api_client.delete_pickup_point(self.pickup_point.id)
+            success = await api_client.delete_pickup_point(self.data.id)
         return success
 
 
-class HiddenPaymentIntent:
+class HiddenPaymentIntent(HiddenWrapper):
     def __init__(self, payment_intent: PaymentIntent):
-        self.payment_intent = payment_intent
+        self.data = payment_intent
+
+    @classmethod
+    async def list(cls) -> list[Self]:
+        return []
 
     @classmethod
     async def create(
         cls, amount: int, method: PaymentMethod, payment_details: Optional[dict] = None
-    ) -> "HiddenPaymentIntent":
+    ) -> Self:
         async with APIClient() as api_client:
             payment_intent_data = PaymentIntentCreate(
                 amount=amount, method=method, payment_details=payment_details
@@ -146,16 +192,18 @@ class HiddenPaymentIntent:
         return cls(PaymentIntent.parse_obj(created_payment_intent))
 
     @classmethod
-    async def get(cls, payment_intent_id: str) -> Optional["HiddenPaymentIntent"]:
+    async def get(cls, payment_intent_id: str) -> Optional[Self]:
         async with APIClient() as api_client:
             payment_intent_data = await api_client.get_payment_intent_by_id(
                 payment_intent_id
             )
-        return (
-            cls(PaymentIntent.parse_obj(payment_intent_data))
-            if payment_intent_data
-            else None
-        )
+        if not payment_intent_data:
+            return None
+        return cls(PaymentIntent.parse_obj(payment_intent_data))
+
+    @classmethod
+    async def get_or_create(cls, id: Optional[str] = None, *args, **kwargs) -> Self:
+        pass
 
     async def update(
         self,
@@ -168,22 +216,26 @@ class HiddenPaymentIntent:
                 payment_details=payment_details,
             )
             updated_payment_intent = await api_client.update_payment_intent(
-                payment_intent_id=self.payment_intent.id,
+                payment_intent_id=self.data.id,
                 payment_intent_data=payment_intent_update,
             )
 
-        self.payment_intent = PaymentIntent.parse_obj(updated_payment_intent)
-        return self.payment_intent
+        self.data = PaymentIntent.parse_obj(updated_payment_intent)
+        return self.data
 
     async def delete(self) -> bool:
         async with APIClient() as api_client:
-            success = await api_client.delete_payment_intent(self.payment_intent.id)
+            success = await api_client.delete_payment_intent(self.data.id)
         return success
 
 
-class HiddenDeliveryDetails:
+class HiddenDeliveryDetails(HiddenWrapper):
     def __init__(self, delivery_details: DeliveryDetails):
-        self.delivery_details = delivery_details
+        self.data = delivery_details
+
+    @classmethod
+    async def list(cls) -> list[Self]:
+        return []
 
     @classmethod
     async def create(
@@ -194,7 +246,7 @@ class HiddenDeliveryDetails:
         delivery_time: Optional[datetime.datetime] = None,
         courier_id: Optional[str] = None,
         additional_info: Optional[str] = None,
-    ) -> "HiddenDeliveryDetails":
+    ) -> Self:
         async with APIClient() as api_client:
             delivery_details_data = DeliveryDetailsCreate(
                 method=method,
@@ -210,55 +262,66 @@ class HiddenDeliveryDetails:
         return cls(DeliveryDetails.parse_obj(created_delivery_details))
 
     @classmethod
-    async def get(cls, delivery_details_id: str) -> Optional["HiddenDeliveryDetails"]:
+    async def get(cls, delivery_details_id: str) -> Optional[Self]:
         async with APIClient() as api_client:
             delivery_details_data = await api_client.get_delivery_details_by_id(
                 delivery_details_id
             )
-        return (
-            cls(DeliveryDetails.parse_obj(delivery_details_data))
-            if delivery_details_data
-            else None
-        )
+        if not delivery_details_data:
+            return None
+        return cls(DeliveryDetails.parse_obj(delivery_details_data))
+
+    @classmethod
+    async def get_or_create(cls, id: Optional[str] = None, *args, **kwargs) -> Self:
+        pass
 
     async def update(self, delivery_details_data: DeliveryDetailsUpdate) -> bool:
         async with APIClient() as api_client:
             updated_delivery_details = await api_client.update_delivery_details(
-                self.delivery_details.id, delivery_details_data
+                self.data.id, delivery_details_data
             )
         if updated_delivery_details:
-            self.delivery_details = DeliveryDetails.parse_obj(updated_delivery_details)
+            self.data = DeliveryDetails.parse_obj(updated_delivery_details)
             return True
         return False
 
     async def delete(self) -> bool:
         async with APIClient() as api_client:
-            success = await api_client.delete_delivery_details(self.delivery_details.id)
+            success = await api_client.delete_delivery_details(self.data.id)
         return success
 
 
-class HiddenOrder:
+class HiddenOrder(HiddenWrapper):
     def __init__(self, order: Order, user: Optional[HiddenUser] = None):
         self.data = order
         self.user = user
 
     @classmethod
+    async def list(cls) -> list[Self]:
+        async with APIClient() as api_client:
+            try:
+                orders = await api_client.get_orders()
+                return [cls(Order.parse_obj(order)) for order in orders]
+            except:
+                return []
+
+    @classmethod
     async def create(
         cls,
-        items: list[tuple[OrderItem, float]],
+        items: List[tuple[OrderItem, float]],
         price: int,
         user: HiddenUser,
         comment: Optional[str] = None,
         payment_method: Optional[PaymentMethod] = None,
         pickup_point_id: Optional[str] = None,
-    ):
+    ) -> Self:
         async with APIClient() as api_client:
             order_data = OrderCreate(
                 items=[
                     (cls.item_to_str(item[0]), item[1]) for item in items
                 ],  # Convert OrderItem to dict and keep count
                 price=price,
-                user=user.user.id,  # Use the user ID from HiddenUser
+                user=user.data.id,  # Use the user ID from HiddenUser
                 comment=comment,
                 payment_method=payment_method,
                 pickup_point_id=pickup_point_id,
@@ -267,13 +330,17 @@ class HiddenOrder:
         return cls(Order.parse_obj(order))
 
     @classmethod
-    async def get(cls, order_id: str):
+    async def get(cls, order_id: str) -> Self:
         async with APIClient() as api_client:
             try:
                 order = await api_client.get_order_by_id(order_id)
                 return cls(Order.parse_obj(order))
             except:
                 return None
+
+    @classmethod
+    async def get_or_create(cls, id: Optional[str] = None, *args, **kwargs) -> Self:
+        pass
 
     async def update(
         self,
@@ -283,7 +350,7 @@ class HiddenOrder:
         is_paid: Optional[bool] = None,
         price: Optional[int] = None,
         status: Optional[OrderStatus] = None,
-    ):
+    ) -> Self:
         async with APIClient() as api_client:
             order_update = OrderUpdate(
                 review=review,
@@ -297,7 +364,7 @@ class HiddenOrder:
                 order_id=self.data.id, order_update=order_update
             )
         self.data = Order.parse_obj(updated_order)
-        return self.data
+        return self
 
     @staticmethod
     def item_to_str(item: OrderItem) -> str:
@@ -308,17 +375,8 @@ class HiddenOrder:
         logger.error(json.loads(item_str))
         return OrderItem.parse_obj(json.loads(item_str))
 
-    def items(self) -> list[tuple[OrderItem, float]]:
+    def items(self) -> List[tuple[OrderItem, float]]:
         return [(self.str_to_item(item), count) for item, count in self.data.items]
-
-    @classmethod
-    async def list(cls):
-        async with APIClient() as api_client:
-            try:
-                orders = await api_client.get_orders()
-                return [cls(Order.parse_obj(order)) for order in orders]
-            except:
-                return None
 
     async def delivery(self) -> Optional[HiddenDeliveryDetails]:
         async with APIClient() as api_client:
@@ -337,9 +395,20 @@ class HiddenOrder:
                 return None
 
 
-class HiddenItem:
+class HiddenItem(HiddenWrapper):
     def __init__(self, item: OrderItem):
         self.data = item
+
+    @classmethod
+    async def list(cls) -> List[Self]:
+        hidden_items: List[Self]
+        async with APIClient() as api_client:
+            try:
+                items = await api_client.get_menu_items()
+                hidden_items = [cls(OrderItem.parse_obj(item)) for item in items]
+                return hidden_items
+            except:
+                return []
 
     @classmethod
     async def create(
@@ -353,20 +422,14 @@ class HiddenItem:
         return cls(OrderItem.parse_obj(created_item))
 
     @classmethod
-    async def get(cls, item_id: str) -> Optional["HiddenItem"]:
+    async def get(cls, id: str) -> Optional["HiddenItem"]:
         async with APIClient() as api_client:
-            item_data = await api_client.get_menu_item(item_id)
+            item_data = await api_client.get_menu_item(id)
         return cls(OrderItem.parse_obj(item_data)) if item_data else None
 
     @classmethod
-    async def list(cls) -> list["HiddenItem"]:
-        async with APIClient() as api_client:
-            try:
-                items = await api_client.get_menu_items()
-                hidden_items = [HiddenItem(OrderItem.parse_obj(item)) for item in items]
-                return hidden_items
-            except:
-                return []
+    async def get_or_create(cls, id: Optional[str] = None, *args, **kwargs) -> Self:
+        pass
 
     async def update(self, item_data: OrderItemUpdate) -> bool:
         async with APIClient() as api_client:
@@ -387,7 +450,7 @@ class HiddenMenu:
         self.hidden_items = [HiddenItem(item) for item in items]
 
     @classmethod
-    async def get_items(cls) -> "HiddenMenu":
+    async def get_items(cls) -> Self:
         async with APIClient() as api_client:
             try:
                 items = await api_client.get_menu_items()

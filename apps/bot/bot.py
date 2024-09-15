@@ -1,6 +1,6 @@
 import asyncio
 
-from init import dp, bot, redis_client
+from init import dp, bot
 from handlers.notifiers import register_notifiers
 import handlers.commands
 import handlers.callbacks

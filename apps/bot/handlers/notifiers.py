@@ -20,10 +20,10 @@ async def on_update(user_id, order_id):
         logger.error(f"Пользователь {order.data.user} не сфетчился")
         return
 
-    await bot.send_message(user.user.telegram_id, "Заказ упакован:")
+    await bot.send_message(user.data.telegram_id, "Заказ упакован:")
 
     msg = render_template("order_info.txt", order=order.data, items=order.items())
-    await bot.send_message(user.user.telegram_id, msg)
+    await bot.send_message(user.data.telegram_id, msg)
 
 
 async def register_notifiers():
