@@ -40,7 +40,6 @@ async def description_func(items: list[HiddenItem], first_index: int):
 
 
 item_show_view = ObjectShowView(HiddenItem, "item", dp)
-
 items_callback = item_show_view.callback
 
 
@@ -59,9 +58,6 @@ async def item_edit_name_button(
     view: ObjectShowView,
 ):
     await view.set_state(state, "edit_name", callback_data.object_id)
-    current_state = await state.get_data()
-    logger.error(f"STATE: {current_state}")
-
     await callback_query.message.reply("Введите новое название:")
 
 
@@ -80,7 +76,88 @@ async def item_edit_name(
         await message.answer(f"что-то пошло не так")
         return
 
-    await hidden_item.update(OrderItemUpdate(item=message.text))
+    res = await hidden_item.update(OrderItemUpdate(item=message.text))
+
+    if not res:
+        await message.answer(f"что-то пошло не так")
+        return
+
+    await message.answer(f"Обновлено на: {message.text}")
+
+
+@item_show_view.register_callback("edit_description", "Изменить описание")
+async def item_edit_description_button(
+    callback_query: types.CallbackQuery,
+    callback_data: items_callback,
+    state: FSMContext,
+    view: ObjectShowView,
+):
+    await view.set_state(state, "edit_description", callback_data.object_id)
+    await callback_query.message.reply("Введите новое описание:")
+
+
+@item_show_view.register_reply("edit_description")
+async def item_edit_description(
+    message: types.Message,
+    state: FSMContext,
+    view: ObjectShowView,
+):
+    state_data = await state.get_data()
+    obj_id = state_data["obj_id"]
+    hidden_item = await HiddenItem.get(id=obj_id)
+    await state.clear()
+
+    if hidden_item is None:
+        await message.answer(f"что-то пошло не так")
+        return
+
+    res = await hidden_item.update(OrderItemUpdate(details=message.text))
+
+    if not res:
+        await message.answer(f"что-то пошло не так")
+        return
+
+    await message.answer(f"Обновлено на: {message.text}")
+
+
+@item_show_view.register_callback("edit_price", "Изменить цену")
+async def item_edit_price_button(
+    callback_query: types.CallbackQuery,
+    callback_data: items_callback,
+    state: FSMContext,
+    view: ObjectShowView,
+):
+    await view.set_state(state, "edit_price", callback_data.object_id)
+    await callback_query.message.reply("Введите новую цену:")
+
+
+@item_show_view.register_reply("edit_price")
+async def item_edit_price(
+    message: types.Message,
+    state: FSMContext,
+    view: ObjectShowView,
+):
+    state_data = await state.get_data()
+    obj_id = state_data["obj_id"]
+    hidden_item = await HiddenItem.get(id=obj_id)
+    await state.clear()
+
+    if hidden_item is None:
+        await message.answer(f"что-то пошло не так")
+        return
+
+    new_price = 0
+    try:
+        new_price = int(message.text)
+    except:
+        await message.answer(f"не число")
+        return
+
+    res = await hidden_item.update(OrderItemUpdate(price=new_price))
+
+    if not res:
+        await message.answer(f"что-то пошло не так")
+        return
 
     await message.answer(f"Обновлено на: {message.text}")
 

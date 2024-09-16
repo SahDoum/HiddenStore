@@ -1,37 +1,19 @@
 import logging
-from aiogram.filters import Command
+from typing import Optional
 from aiogram import types
-from aiogram.utils.keyboard import InlineKeyboardBuilder
-from aiogram.filters.callback_data import CallbackData
+from aiogram.fsm.context import FSMContext
 
 
 from libs.hidden_client import HiddenPickupPoint
 
-from init import dp, bot
+from paginator_view import Paginator
+from object_show_view import ObjectShowView
+from init import dp, bot, render_template
 from object_create_view import ObjectCreateView
 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-
-# Callback data for pickup point deletion
-class PickupPointDeleteCallback(CallbackData, prefix="delete_pickup_point"):
-    pickup_point_id: str
-
-
-def delete_pickup_point_keyboard(pickup_points: list):
-    builder = InlineKeyboardBuilder()
-
-    for pickup_point in pickup_points:
-        builder.button(
-            text=pickup_point.pickup_point.address,
-            callback_data=PickupPointDeleteCallback(
-                pickup_point_id=pickup_point.pickup_point.id
-            ),
-        )
-
-    return builder.as_markup()
 
 
 pickup_point_factory = ObjectCreateView(
@@ -45,33 +27,28 @@ pickup_point_factory = ObjectCreateView(
 )
 
 
-# /delete_pickup_point command handler
-@dp.message(Command("delete_pickup_point"))
-async def cmd_delete_pickup_point(message: types.Message):
-    # Fetch all pickup points
-    pickup_points = await HiddenPickupPoint.get_all()
-
-    if not pickup_points:
-        await message.answer("Нет доступных пунктов самовывоза для удаления.")
-        return
-
-    # Build the inline keyboard with pickup points
-    keyboard = delete_pickup_point_keyboard(pickup_points)
-
-    await message.answer(
-        "Выберите пункт самовывоза для удаления:", reply_markup=keyboard
-    )
+pickuppoint_view = ObjectShowView(HiddenPickupPoint, "pickuppoint", dp)
+pickuppoint_callback = pickuppoint_view.callback
 
 
-# Callback handler for pickup point deletion
-@dp.callback_query(PickupPointDeleteCallback.filter())
-async def process_delete_pickup_point(
-    callback_query: types.CallbackQuery, callback_data: PickupPointDeleteCallback
+@pickuppoint_view.register_start
+async def order_show_message(hidden_pickuppoint: Optional[HiddenPickupPoint]):
+    if hidden_pickuppoint is None:
+        return f"Заказ потерялся. Что-то пошло не так"
+
+    msg = hidden_pickuppoint.data.description
+
+    return msg
+
+
+@pickuppoint_view.register_callback("delete", "Удалить")
+async def order_delete_message(
+    callback_query: types.CallbackQuery,
+    callback_data: pickuppoint_callback,
+    state: FSMContext,
+    view: ObjectShowView,
 ):
-    # Retrieve the pickup point ID
-    pickup_point_id = callback_data.pickup_point_id
-
-    # Placeholder: Call the delete method for the selected pickup point
+    pickup_point_id = callback_data.object_id
     point = await HiddenPickupPoint.get(pickup_point_id)
 
     success = False
@@ -88,5 +65,30 @@ async def process_delete_pickup_point(
     else:
         await callback_query.answer("Ошибка при удалении пункта самовывоза.")
 
+
+async def description_func(pickuppoints, first_index):
+    msgs = []
+    for hidden_pickuppoint in pickuppoints:
+        first_index += 1
+        msgs.append(
+            f"{first_index}."
+            + render_template(
+                "pickuppont_info_short.txt",
+                pickuppoint=hidden_pickuppoint.data,
+            )
+        )
+    msg = "Точки самовывоза: \n\n" + "\n".join(msgs)
+
+    return msg
+
+
+pickuppoint_paginator = Paginator(
+    HiddenPickupPoint,
+    pickuppoint_view,
+    "pickuppoint",
+    description_func,
+    "pickuppoint",
+    dp,
+)
 
 logger.info("Pickup Point View registered")

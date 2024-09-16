@@ -146,6 +146,10 @@ class HiddenPickupPoint(HiddenWrapper):
         return cls(PickupPoint.parse_obj(pickup_point_data))
 
     @classmethod
+    async def get_or_create(cls, pickup_point_id: str) -> Optional[Self]:
+        pass
+
+    @classmethod
     async def list(cls) -> List[Self]:
         res: list[Self] = []
         async with APIClient() as api_client:

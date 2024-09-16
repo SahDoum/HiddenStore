@@ -5,6 +5,7 @@ from handlers.notifiers import register_notifiers
 import handlers.orders
 import handlers.items
 import handlers.pickuploints
+import handlers.helper
 
 
 async def main():
