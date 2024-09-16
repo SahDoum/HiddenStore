@@ -65,7 +65,7 @@ async def order_delete_message(
         await callback_query.answer("Ошибка при удалении пункта самовывоза.")
 
 
-async def description_func(pickuppoints, first_index):
+async def description_func(pickuppoints, first_index, state):
     msgs = []
     for hidden_pickuppoint in pickuppoints:
         first_index += 1

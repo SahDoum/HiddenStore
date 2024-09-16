@@ -9,7 +9,7 @@ from libs.telegram_views.object_create_view import ObjectCreateView
 from libs.telegram_views.object_show_view import ObjectShowView
 from libs.telegram_views.paginator_view import Paginator
 
-from init import dp
+from init import dp, render_template
 
 
 logging.basicConfig(level=logging.INFO)
@@ -29,22 +29,13 @@ menu_item_factory = ObjectCreateView(
 )
 
 
-async def description_func(items: list[HiddenItem], first_index: int):
-    order_msgs = []
-    for hidden_item in items:
-        first_index += 1
-        order_msgs.append(f"{first_index}. {hidden_item.data.item}")
-    msg = "Пункты меню: \n\n" + "\n".join(order_msgs)
-    return msg
-
-
 item_show_view = ObjectShowView(HiddenItem, "item", dp)
 items_callback = item_show_view.callback
 
 
 @item_show_view.register_start
 async def order_show_message(hidden_item):
-    msg = f"{hidden_item.data}"
+    msg = render_template("item_info.txt", item=hidden_item.data)
 
     return msg
 
@@ -159,6 +150,15 @@ async def item_edit_price(
         return
 
     await message.answer(f"Обновлено на: {message.text}")
+
+
+async def description_func(items: list[HiddenItem], first_index: int, state):
+    order_msgs = []
+    for hidden_item in items:
+        first_index += 1
+        order_msgs.append(f"{first_index}. {hidden_item.data.item}")
+    msg = "Пункты меню: \n\n" + "\n".join(order_msgs)
+    return msg
 
 
 orders_paginator = Paginator(

@@ -24,29 +24,16 @@ async def order_show_message(hidden_order):
     if hidden_order is None:
         return f"Заказ потерялся. Что-то пошло не так"
 
-    hidden_user = await HiddenUser.get_or_create(id=hidden_order.data.user)
-
     msg = render_template(
         "order_info.txt",
         order=hidden_order.data,
         items=hidden_order.items(),
-        user=hidden_user.data,
     )
 
     return msg
 
 
-@orders_view.register_callback("delete", "Удалить")
-def order_delete_message(
-    callback_query: types.CallbackQuery,
-    callback_data: orders_callback,
-    state: FSMContext,
-    view: ObjectShowView,
-):
-    pass
-
-
-@orders_view.register_callback("packed", "Запаковать")
+@orders_view.register_callback("received", "Получил")
 async def process_callback(
     callback_query: types.CallbackQuery,
     callback_data: orders_callback,
@@ -59,9 +46,8 @@ async def process_callback(
         await callback_query.answer(f"Заказ потерялся. Что-то пошло не так")
         return
 
-    await hidden_order.update(status=OrderStatus.PACKED)
-
-    await callback_query.message.reply("Запаковали!")
+    await hidden_order.update(status=OrderStatus.SHIPPED)
+    await callback_query.message.reply("Рады работать!")
 
 
 @orders_view.register_callback("suport", "Открыть чат")
@@ -75,6 +61,8 @@ def order_support(
 
 
 async def description_func(orders, first_index, state):
+    state_data = await state.get_data()
+    logger.error(state_data)
     order_msgs = []
     for hidden_order in orders:
         first_index += 1
@@ -93,8 +81,14 @@ async def description_func(orders, first_index, state):
     return msg
 
 
+async def state_preparer(message: types.Message, state: FSMContext):
+    telegram_id = str(message.from_user.id)
+    user = await HiddenUser.get_or_create(telegram_id=telegram_id)
+    await state.update_data(obj_id=user.data.id)
+
+
 orders_paginator = Paginator(
-    HiddenOrder, orders_view, "order", description_func, "orders", dp
+    HiddenOrder, orders_view, "order", description_func, "orders", dp, state_preparer
 )
 
 logger.info("Order View registered")

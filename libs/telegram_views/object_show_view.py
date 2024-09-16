@@ -6,7 +6,7 @@ from aiogram.filters.callback_data import CallbackData
 from aiogram import Dispatcher
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
+from aiogram.fsm.state import StatesGroup
 
 from .paginator_view import PageCallback
 from libs.hidden_client import HiddenWrapper
@@ -18,9 +18,14 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+# class ActionsState(StatesGroup):
+#     action = State()
+#     obj_id = State()
+
+
 class ObjectShowView:
     DefaultStartFilter = "show"
-    state_group: StatesGroup
+    # state_group: StatesGroup
 
     def __init__(self, object_type: HiddenWrapper, prefix: str, dp: Dispatcher):
         self.object_type: HiddenWrapper = object_type
@@ -36,13 +41,9 @@ class ObjectShowView:
 
         self.callback = ActionsCallback
 
-        class ActionsState(StatesGroup):
-            action = State()
-            obj_id = State()
+        # self.state_group = ActionsState
 
-        self.state_group = ActionsState
-
-        self.state_filter = StateFilter
+        # self.state_filter = StateFilter
 
     def register_callback(self, name: str, description: str):
         def decorator(func):

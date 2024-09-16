@@ -4,6 +4,7 @@ from init import dp, bot
 from handlers.notifiers import register_notifiers
 import handlers.commands
 import handlers.callbacks
+import handlers.orders
 
 
 async def main():

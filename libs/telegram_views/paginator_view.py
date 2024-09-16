@@ -3,10 +3,20 @@ from aiogram import F, types
 from aiogram.filters import Command
 from aiogram.filters.callback_data import CallbackData
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.fsm.context import FSMContext
+
+
+from libs.hidden_client.wrappers import HiddenWrapper
 
 from .utils import get_page, ORDERS_PER_PAGE
 
 from init import bot
+
+import logging
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class PageCallback(CallbackData, prefix="page"):
@@ -46,12 +56,13 @@ def orders_pagination_keyboard(
 class Paginator:
     def __init__(
         self,
-        object_type,
+        object_type: HiddenWrapper,
         object_view,
         prefix: str,
         item_description_func,
         command: str,
         dp: Dispatcher,
+        state_preparer=None,
     ) -> None:
         self.object_type = object_type
         self.object_view = object_view
@@ -62,18 +73,21 @@ class Paginator:
 
         self.register_item_description(item_description_func)
         self.init_page_callback()
+        self.state_preparer = state_preparer
 
     def register_item_description(self, func):
         func = self.item_description_func
 
         @self.dp.message(Command(self.command))
-        async def cmd_start(message: types.Message):
-            objects = await self.object_type.list()
+        async def cmd_start(message: types.Message, state: FSMContext):
+            if self.state_preparer is not None:
+                await self.state_preparer(message, state)
+            objects = await self.get_objects(state)
             if objects is None:
-                await message.reply(f"Нет")
+                await message.reply(f"Ничего нет")
                 return
 
-            msg, keyboard = await self.render_page_and_keyboard(objects, 0)
+            msg, keyboard = await self.render_page_and_keyboard(objects, 0, state)
             await message.reply(text=msg, reply_markup=keyboard)
 
         return func
@@ -81,17 +95,19 @@ class Paginator:
     def init_page_callback(self):
         @self.dp.callback_query(PageCallback.filter(F.obj_prefix == self.prefix))  #
         async def process_callback_pagination(
-            callback_query: types.CallbackQuery, callback_data: PageCallback
+            callback_query: types.CallbackQuery,
+            callback_data: PageCallback,
+            state: FSMContext,
         ):
             page = callback_data.page
 
-            objects = await self.object_type.list()
+            objects = await self.get_objects(state)
 
             if objects is None:
                 await callback_query.answer(f"Страница потерялась. Что-то пошло не так")
                 return
 
-            msg, keyboard = await self.render_page_and_keyboard(objects, page)
+            msg, keyboard = await self.render_page_and_keyboard(objects, page, state)
 
             await bot.edit_message_text(
                 chat_id=callback_query.message.chat.id,
@@ -100,13 +116,28 @@ class Paginator:
                 reply_markup=keyboard,
             )
 
-    async def render_page_and_keyboard(self, objects, page: int):
+    async def render_page_and_keyboard(self, objects, page: int, state: FSMContext):
         obj_page = get_page(objects, page)
         first_index = page * ORDERS_PER_PAGE
-        msg = await self.item_description_func(obj_page, first_index)
+        msg = await self.item_description_func(obj_page, first_index, state)
 
         keyboard = orders_pagination_keyboard(
             objects, page, self.prefix, first_index, self.object_view.callback
         )
 
         return msg, keyboard
+
+    async def get_objects(self, state: FSMContext) -> list[HiddenWrapper]:
+        objects = await self.object_type.list()
+        state_data = await state.get_data()
+
+        # Король костылей
+        if "obj_id" in state_data:
+            obj_id = state_data["obj_id"]
+            logger.error(obj_id)
+            logger.error(objects)
+            for obj in objects:
+                logger.error(obj.data.id)
+            objects = [obj for obj in objects if obj.data.user == obj_id]
+
+        return objects

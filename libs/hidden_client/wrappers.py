@@ -79,6 +79,18 @@ class HiddenUser(HiddenWrapper):
         self.data = user
 
     @classmethod
+    async def list(cls) -> list[Self]:
+        return []
+
+    @classmethod
+    async def get(cls) -> Self:
+        pass
+
+    @classmethod
+    async def create(cls) -> Self:
+        pass
+
+    @classmethod
     async def get_or_create(
         cls,
         id: Optional[str] = None,
@@ -370,6 +382,9 @@ class HiddenOrder(HiddenWrapper):
         self.data = Order.parse_obj(updated_order)
         return self
 
+    async def delete(self) -> bool:
+        return False
+
     @staticmethod
     def item_to_str(item: OrderItem) -> str:
         return json.dumps(item.model_dump(mode="json"))
@@ -395,6 +410,14 @@ class HiddenOrder(HiddenWrapper):
             try:
                 payment = await api_client.get_payment_intent_by_id(self.data.id)
                 return HiddenPaymentIntent(PaymentIntent.parse_obj(payment))
+            except:
+                return None
+
+    async def user(self) -> Optional[HiddenUser]:
+        async with APIClient() as api_client:
+            try:
+                user = await api_client.get_user_by_id(self.data.user.id)
+                return HiddenUser(User.parse_obj(user))
             except:
                 return None
 

@@ -1,9 +1,12 @@
 import logging
 
-from libs.hidden_client import HiddenOrder
+from libs.hidden_client import HiddenOrder, HiddenUser
+from libs.models.statuses import OrderStatus
+
 from init import bot, redis_client
 from config import KITCHEN_TG_ID
 from init import render_template
+
 
 from keyboards import order_keyboard
 from handlers.orders import orders_view
@@ -26,6 +29,29 @@ async def on_create(user_id, order_id):
     keyboard = order_keyboard(hidden_order.data, orders_view.callback)
 
     await bot.send_message(KITCHEN_TG_ID, msg, reply_markup=keyboard)
+
+
+async def on_update(user_id, order_id):
+    order = await HiddenOrder.get(order_id)
+    if order is None:
+        logger.error(f"on_update: Заказ {order_id} не сфетчился")
+        return
+    if order.data.status == OrderStatus.SHIPPED:
+        user = await HiddenUser.get_or_create(id=order.data.user)
+
+        if user is None:
+            logger.error(f"on_update: Пользователь {order.data.user} не сфетчился")
+            return
+
+        await bot.send_message(user.data.telegram_id, "Заказ доставлен:")
+
+        msg = render_template(
+            "order_info.txt",
+            order=order.data,
+            items=order.items(),
+            user=user,
+        )
+        await bot.send_message(user.data.telegram_id, msg)
 
 
 async def register_notifiers():
