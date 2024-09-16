@@ -5,10 +5,10 @@ from aiogram.fsm.context import FSMContext
 
 from libs.hidden_client import HiddenUser, HiddenOrder
 from libs.models.statuses import OrderStatus
+from libs.telegram_views.object_show_view import ObjectShowView
+from libs.telegram_views.paginator_view import Paginator
 
 from init import dp, render_template
-from object_show_view import ObjectShowView
-from paginator_view import Paginator
 
 
 logging.basicConfig(level=logging.INFO)

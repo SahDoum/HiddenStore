@@ -4,8 +4,8 @@ from aiogram.filters import Command
 from aiogram.filters.callback_data import CallbackData
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from config import ORDERS_PER_PAGE
-from utils import get_page
+from .utils import get_page, ORDERS_PER_PAGE
+
 from init import bot
 
 

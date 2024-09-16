@@ -3,13 +3,12 @@ from typing import Optional
 from aiogram import types
 from aiogram.fsm.context import FSMContext
 
-
 from libs.hidden_client import HiddenPickupPoint
+from libs.telegram_views.paginator_view import Paginator
+from libs.telegram_views.object_show_view import ObjectShowView
+from libs.telegram_views.object_create_view import ObjectCreateView
 
-from paginator_view import Paginator
-from object_show_view import ObjectShowView
 from init import dp, bot, render_template
-from object_create_view import ObjectCreateView
 
 
 logging.basicConfig(level=logging.INFO)

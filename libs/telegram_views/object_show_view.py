@@ -1,3 +1,5 @@
+import logging
+
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram import F, types
 from aiogram.filters.callback_data import CallbackData
@@ -6,14 +8,10 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
-
-import logging
-
+from .paginator_view import PageCallback
+from libs.hidden_client import HiddenWrapper
 
 from init import dp, bot
-from paginator_view import PageCallback
-
-from libs.hidden_client import HiddenWrapper
 
 
 logging.basicConfig(level=logging.INFO)
@@ -111,6 +109,6 @@ class ObjectShowView:
             text="<< К списку заказов",
             callback_data=PageCallback(page=0, obj_prefix=self.prefix),
         )
-        # builder.adjust(-1, 1)
+        builder.adjust(3, repeat=True)
 
         return builder.as_markup()
