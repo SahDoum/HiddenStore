@@ -100,17 +100,17 @@
 			<div class="page__text">Выберите пункт выдачи заказа:</div>
 			<div class="page__block">
 				{% for point in pickup_points %}
-				<input type="radio" id="{{ point.pickup_point.id }}" name="pickup-group" class="input input--radio">
-				<label for="{{ point.pickup_point.id }}" class="input__label">
+				<input type="radio" id="{{ point.data.id }}" name="pickup-group" class="input input--radio">
+				<label for="{{ point.data.id }}" class="input__label">
 					<div class="list-item list-item--selected ripple-wrapper">
 						<div class="list-item__photo">
 							<img class="item-icon item-icon--order" src="static/img/default.png">
 						</div>
 						<div class="list-item__label">
 							<div class="list-item__title">
-								{{ point.pickup_point.address }}
+								{{ point.data.address }}
 							</div>
-							<div class="list-item__description">{{ point.pickup_point.description }}</div>
+							<div class="list-item__description">{{ point.data.description }}</div>
 
 						</div>
 						<span class="ripple-mask"><span class="ripple"></span></span>
