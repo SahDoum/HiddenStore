@@ -334,7 +334,7 @@ class HiddenOrder(HiddenWrapper):
         async with APIClient() as api_client:
             order_data = OrderCreate(
                 items=[
-                    (cls.item_to_str(item[0]), item[1]) for item in items
+                    (cls._item_to_str(item[0]), item[1]) for item in items
                 ],  # Convert OrderItem to dict and keep count
                 price=price,
                 user=user.data.id,  # Use the user ID from HiddenUser
@@ -386,16 +386,15 @@ class HiddenOrder(HiddenWrapper):
         return False
 
     @staticmethod
-    def item_to_str(item: OrderItem) -> str:
+    def _item_to_str(item: OrderItem) -> str:
         return json.dumps(item.model_dump(mode="json"))
 
     @staticmethod
-    def str_to_item(item_str: str) -> OrderItem:
-        logger.error(json.loads(item_str))
+    def _str_to_item(item_str: str) -> OrderItem:
         return OrderItem.parse_obj(json.loads(item_str))
 
     def items(self) -> List[tuple[OrderItem, float]]:
-        return [(self.str_to_item(item), count) for item, count in self.data.items]
+        return [(self._str_to_item(item), count) for item, count in self.data.items]
 
     async def delivery(self) -> Optional[HiddenDeliveryDetails]:
         async with APIClient() as api_client:

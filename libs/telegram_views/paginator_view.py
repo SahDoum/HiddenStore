@@ -83,7 +83,7 @@ class Paginator:
             if self.state_preparer is not None:
                 await self.state_preparer(message, state)
             objects = await self.get_objects(state)
-            if objects is None:
+            if not objects:
                 await message.reply(f"Ничего нет")
                 return
 
@@ -132,8 +132,8 @@ class Paginator:
         state_data = await state.get_data()
 
         # Король костылей
-        if "obj_id" in state_data:
-            obj_id = state_data["obj_id"]
+        if "user_id" in state_data:
+            obj_id = state_data["user_id"]
             logger.error(obj_id)
             logger.error(objects)
             for obj in objects:

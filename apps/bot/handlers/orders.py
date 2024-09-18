@@ -84,7 +84,7 @@ async def description_func(orders, first_index, state):
 async def state_preparer(message: types.Message, state: FSMContext):
     telegram_id = str(message.from_user.id)
     user = await HiddenUser.get_or_create(telegram_id=telegram_id)
-    await state.update_data(obj_id=user.data.id)
+    await state.update_data(user_id=user.data.id)
 
 
 orders_paginator = Paginator(
