@@ -38,7 +38,7 @@ app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     menu = await HiddenMenu.get_items()
-    pickup_points = await HiddenPickupPoint.get_all()
+    pickup_points = await HiddenPickupPoint.list()
     return templates.TemplateResponse(
         "cafe.html",
         {
