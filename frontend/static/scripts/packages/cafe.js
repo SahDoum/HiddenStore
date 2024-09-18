@@ -189,11 +189,11 @@ class Cafe {
 		this.apiManager.request("order", params, (result) => {
 			console.log(result);
 			this.toggleLoading(false);
-			if (result.ok) {
-				Telegram.WebApp.close();
-			}
 			if (result.error) {
 				this.showStatus(result.error);
+			}
+			else {
+				Telegram.WebApp.close();
 			}
 		});
 	}

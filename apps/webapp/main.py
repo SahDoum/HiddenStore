@@ -50,7 +50,7 @@ async def read_root(request: Request):
     )
 
 
-@app.post("/api/order")
+@app.post("/api/order", status_code=201)
 async def order(request: OrderData):
     try:
         logger.error("/api/order")
