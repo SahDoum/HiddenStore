@@ -62,18 +62,17 @@ def order_support(
 
 async def description_func(orders, first_index, state):
     state_data = await state.get_data()
-    logger.error(state_data)
     order_msgs = []
     for hidden_order in orders:
         first_index += 1
-        hidden_user = await HiddenUser.get_or_create(id=hidden_order.data.user)
+        # hidden_user = await HiddenUser.get_or_create(id=hidden_order.data.user)
         order_msgs.append(
             f"{first_index}."
             + render_template(
                 "order_info_store_short.txt",
                 order=hidden_order.data,
                 items=hidden_order.items(),
-                user=hidden_user.data,
+                # user=hidden_user.data,
             )
         )
     msg = "Заказы: \n\n" + "\n".join(order_msgs)
@@ -84,11 +83,25 @@ async def description_func(orders, first_index, state):
 async def state_preparer(message: types.Message, state: FSMContext):
     telegram_id = str(message.from_user.id)
     user = await HiddenUser.get_or_create(telegram_id=telegram_id)
-    await state.update_data(user_id=user.data.id)
+    await state.update_data(paginator_user_id=user.data.id)
+
+
+def filter_objects(objects, state_data):
+    if "paginator_user_id" in state_data:
+        obj_id = state_data["paginator_user_id"]
+        objects = [obj for obj in objects if obj.data.user == obj_id]
+    return objects
 
 
 orders_paginator = Paginator(
-    HiddenOrder, orders_view, "order", description_func, "orders", dp, state_preparer
+    HiddenOrder,
+    orders_view,
+    "order",
+    description_func,
+    "orders",
+    dp,
+    state_preparer,
+    filter_objects,
 )
 
 logger.info("Order View registered")

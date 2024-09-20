@@ -63,6 +63,7 @@ class Paginator:
         command: str,
         dp: Dispatcher,
         state_preparer=None,
+        filter_objects=None,
     ) -> None:
         self.object_type = object_type
         self.object_view = object_view
@@ -74,6 +75,7 @@ class Paginator:
         self.register_item_description(item_description_func)
         self.init_page_callback()
         self.state_preparer = state_preparer
+        self.filter_objects = filter_objects
 
     def register_item_description(self, func):
         func = self.item_description_func
@@ -131,13 +133,7 @@ class Paginator:
         objects = await self.object_type.list()
         state_data = await state.get_data()
 
-        # Король костылей
-        if "user_id" in state_data:
-            obj_id = state_data["user_id"]
-            logger.error(obj_id)
-            logger.error(objects)
-            for obj in objects:
-                logger.error(obj.data.id)
-            objects = [obj for obj in objects if obj.data.user == obj_id]
+        if self.filter_objects:
+            objects = self.filter_objects(objects, state_data)
 
         return objects
