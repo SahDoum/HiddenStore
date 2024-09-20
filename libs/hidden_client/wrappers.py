@@ -1,6 +1,6 @@
 import logging
 
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Generic, TypeVar
 from typing_extensions import Self
 
 from abc import ABC, abstractmethod
@@ -41,9 +41,11 @@ from libs.models.statuses import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+T = TypeVar("T")
 
-class HiddenWrapper(ABC):
-    data: Any
+
+class HiddenWrapper(ABC, Generic[T]):
+    data: T
 
     @classmethod
     @abstractmethod
@@ -74,7 +76,7 @@ class HiddenWrapper(ABC):
         pass
 
 
-class HiddenUser(HiddenWrapper):
+class HiddenUser(HiddenWrapper[User]):
     def __init__(self, user: User):
         self.data = user
 
@@ -83,8 +85,16 @@ class HiddenUser(HiddenWrapper):
         return []
 
     @classmethod
-    async def get(cls) -> Self:
-        pass
+    async def get(cls, id: Optional[str] = None, *args, **kwargs) -> Self:
+        if id is None:
+            return None
+
+        async with APIClient() as api_client:
+            try:
+                user = await api_client.get_user_by_id(id)
+                return cls(User.parse_obj(user))
+            except Exception as e:
+                return None
 
     @classmethod
     async def create(cls) -> Self:
@@ -132,7 +142,7 @@ class HiddenUser(HiddenWrapper):
                 return []
 
 
-class HiddenPickupPoint(HiddenWrapper):
+class HiddenPickupPoint(HiddenWrapper[PickupPoint]):
     def __init__(self, pickup_point: PickupPoint):
         self.data = pickup_point
 
@@ -186,7 +196,7 @@ class HiddenPickupPoint(HiddenWrapper):
         return success
 
 
-class HiddenPaymentIntent(HiddenWrapper):
+class HiddenPaymentIntent(HiddenWrapper[PaymentIntent]):
     def __init__(self, payment_intent: PaymentIntent):
         self.data = payment_intent
 
@@ -245,7 +255,7 @@ class HiddenPaymentIntent(HiddenWrapper):
         return success
 
 
-class HiddenDeliveryDetails(HiddenWrapper):
+class HiddenDeliveryDetails(HiddenWrapper[DeliveryDetails]):
     def __init__(self, delivery_details: DeliveryDetails):
         self.data = delivery_details
 
@@ -307,10 +317,10 @@ class HiddenDeliveryDetails(HiddenWrapper):
         return success
 
 
-class HiddenOrder(HiddenWrapper):
+class HiddenOrder(HiddenWrapper[Order]):
     def __init__(self, order: Order, user: Optional[HiddenUser] = None):
         self.data = order
-        self.user = user
+        self._user = user
 
     @classmethod
     async def list(cls) -> list[Self]:
@@ -413,15 +423,18 @@ class HiddenOrder(HiddenWrapper):
                 return None
 
     async def user(self) -> Optional[HiddenUser]:
+        if self._user is not None:
+            return self._user
+
         async with APIClient() as api_client:
             try:
-                user = await api_client.get_user_by_id(self.data.user.id)
+                user = await api_client.get_user_by_id(self.data.user)
                 return HiddenUser(User.parse_obj(user))
             except:
                 return None
 
 
-class HiddenItem(HiddenWrapper):
+class HiddenItem(HiddenWrapper[OrderItem]):
     def __init__(self, item: OrderItem):
         self.data = item
 
