@@ -55,6 +55,7 @@ services:
     environment:
       - TELEGRAM_TOKEN=${KITCHEN_BOT_TOKEN}
       - KITCHEN_TG_ID=${KITCHEN_TG_ID}
+      - ADMINS=${ADMINS}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - SERVER_URL=http://server:8000
