@@ -17,15 +17,26 @@ logger = logging.getLogger(__name__)
 
 
 async def on_create(user_id, order_id):
-    await bot.send_message(KITCHEN_TG_ID, f"Новый заказ. Id: {order_id}")
     hidden_order = await HiddenOrder.get(order_id)
     if hidden_order is None:
-        await bot.send_message(KITCHEN_TG_ID, "заказ не сфетчился")
+        await bot.send_message(
+            KITCHEN_TG_ID, "Пришел новый заказ, но что-то пошло не так, и его не покажу"
+        )
         return
 
-    msg = render_template(
-        "order_info.txt", order=hidden_order.data, items=hidden_order.items()
+    user_data = None
+    user = await hidden_order.user()
+    if user is not None:
+        user_data = user.data
+
+    msg = "Пришел новый заказ: \n\n"
+    msg += render_template(
+        "order_info.txt",
+        order=hidden_order.data,
+        items=hidden_order.items(),
+        user=user_data,
     )
+    logger.error(msg)
     keyboard = order_keyboard(hidden_order.data, orders_view.callback)
 
     await bot.send_message(KITCHEN_TG_ID, msg, reply_markup=keyboard)

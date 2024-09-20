@@ -6,7 +6,7 @@ def order_keyboard(order: Order, callback):
     builder = InlineKeyboardBuilder()
 
     builder.button(
-        "Отгрузил, пусть приходит ->",
+        text="Отгрузил, пусть приходит ->",
         callback_data=callback(object_id=order.id, action="packed"),
     )
 

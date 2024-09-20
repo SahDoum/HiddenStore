@@ -1,4 +1,4 @@
-ORDERS_PER_PAGE = 3
+ORDERS_PER_PAGE = 8
 
 
 def get_page(items: list, page: int) -> list:

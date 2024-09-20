@@ -72,7 +72,7 @@ async def delete_user(user_id: str):
 @app.post("/orders/", response_model=models.Order)
 async def create_order(order: schemas.OrderCreate):
     res_order = await OrderAPI.create(data=order)
-    await notify("create", order_id=res_order.id)
+    await notify("create", order_id=res_order.id, user_id=res_order.user)
     return order
 
 
