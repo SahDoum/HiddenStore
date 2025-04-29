@@ -10,6 +10,7 @@ from libs.models.models import (
     DeliveryDetails,
     PaymentIntent,
     PickupPoint,
+    TimeSlot,
 )
 from libs.models.schemas import (
     UserCreate,
@@ -24,6 +25,8 @@ from libs.models.schemas import (
     PaymentIntentUpdate,
     PickupPointCreate,
     PickupPointUpdate,
+    TimeSlotCreate,
+    TimeSlotUpdate,
 )
 
 from libs.models.statuses import PaymentMethod, DeliveryMethod
@@ -404,6 +407,92 @@ class DeliveryDetailsAPI:
             delivery_details = await session.get(DeliveryDetails, delivery_details_id)
             if delivery_details:
                 await session.delete(delivery_details)
+                await session.commit()
+                return True
+            return False
+
+
+class TimeSlotsAPI:
+    @staticmethod
+    async def create(data: TimeSlotCreate) -> TimeSlot:
+        async with await get_session() as session:
+            # Проверим, что новый слот не пересекается с уже существующими
+            conflicting_slots = await session.execute(
+                select(TimeSlot)
+                .where(TimeSlot.date == data.date)
+                .where(TimeSlot.start_time < data.end_time)
+                .where(TimeSlot.end_time > data.start_time)
+            )
+            if conflicting_slots.scalars().first():
+                raise ValueError(
+                    "Новый слот пересекается с существующими временными интервалами"
+                )
+
+            new_slot = TimeSlot(
+                date=data.date, start_time=data.start_time, end_time=data.end_time
+            )
+            session.add(new_slot)
+            await session.commit()
+            await session.refresh(new_slot)
+            return new_slot
+
+    @staticmethod
+    async def get(slot_id: str) -> Optional[TimeSlot]:
+        async with await get_session() as session:
+            return await session.get(TimeSlot, slot_id)
+
+    @staticmethod
+    async def get_all() -> list[TimeSlot]:
+        async with await get_session() as session:
+            result = await session.execute(
+                select(TimeSlot).order_by(TimeSlot.date.desc(), TimeSlot.start_time)
+            )
+            return list(result.scalars().all())
+
+    @staticmethod
+    async def get_by_date(date: datetime.date) -> list[TimeSlot]:
+        async with await get_session() as session:
+            result = await session.execute(
+                select(TimeSlot).where(TimeSlot.date == date)
+            )
+            return list(result.scalars().all())
+
+    @staticmethod
+    async def update(slot_id: str, data: TimeSlotUpdate) -> Optional[TimeSlot]:
+        async with await get_session() as session:
+            slot = await session.get(TimeSlot, slot_id)
+            if slot:
+                if data.start_time is not None:
+                    slot.start_time = data.start_time
+                if data.end_time is not None:
+                    slot.end_time = data.end_time
+                if data.date is not None:
+                    slot.date = data.date
+
+                # Проверим, что обновленный слот не пересекается с существующими
+                conflicting_slots = await session.execute(
+                    select(TimeSlot)
+                    .where(TimeSlot.id != slot_id)  # Исключаем текущий слот
+                    .where(TimeSlot.date == slot.date)
+                    .where(TimeSlot.start_time < slot.end_time)
+                    .where(TimeSlot.end_time > slot.start_time)
+                )
+                if conflicting_slots.scalars().first():
+                    raise ValueError(
+                        "Обновленный слот пересекается с существующими временными интервалами"
+                    )
+
+                slot.timestamp_updated = datetime.datetime.now()
+                await session.commit()
+                await session.refresh(slot)
+            return slot
+
+    @staticmethod
+    async def delete(slot_id: str) -> bool:
+        async with await get_session() as session:
+            slot = await session.get(TimeSlot, slot_id)
+            if slot:
+                await session.delete(slot)
                 await session.commit()
                 return True
             return False

@@ -75,3 +75,15 @@ async def order(request: OrderData):
         return hidden_order
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/timetable", response_class=HTMLResponse)
+async def read_timetable(request: Request):
+    timeslots = [
+        {"date": "2024-09-27", "start_time": "08:00", "end_time": "09:00"},
+        {"date": "2024-09-27", "start_time": "10:30", "end_time": "11:30"},
+    ]
+
+    return templates.TemplateResponse(
+        "timeslots.html", {"request": request, "timeslots": timeslots}
+    )

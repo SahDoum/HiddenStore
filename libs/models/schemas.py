@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator, model_validator
 from typing import Optional
 import datetime
 
@@ -91,3 +91,38 @@ class DeliveryDetailsUpdate(BaseModel):
     delivery_time: Optional[datetime.datetime] = None
     courier_id: Optional[str] = None
     additional_info: Optional[str] = None
+
+
+class TimeSlotCreate(BaseModel):
+    date: datetime.date
+    start_time: datetime.time
+    end_time: datetime.time
+
+    @field_validator("end_time")
+    def validate_time(cls, end_time, values):
+        start_time = values.get("start_time")
+        if start_time and end_time <= start_time:
+            raise ValueError("Время окончания должно быть позже времени начала")
+        return end_time
+
+
+class TimeSlotUpdate(BaseModel):
+    date: Optional[datetime.date] = None
+    start_time: Optional[datetime.time] = None
+    end_time: Optional[datetime.time] = None
+
+    @model_validator(mode="before")
+    def check_times(cls, values):
+        start_time = values.get("start_time")
+        end_time = values.get("end_time")
+
+        if start_time and end_time:
+            if end_time <= start_time:
+                raise ValueError("Время окончания должно быть позже времени начала")
+        return values
+
+    @model_validator(mode="before")
+    def check_at_least_one_field(cls, values):
+        if not any(values.values()):
+            raise ValueError("Необходимо передать хотя бы одно поле для обновления")
+        return values

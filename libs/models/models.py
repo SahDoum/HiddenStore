@@ -95,3 +95,10 @@ class Order(BaseObject, table=True):
 
     review: Optional[str] = None
     is_delivered: bool = Field(default=False)
+
+
+class TimeSlot(BaseObject, table=True):
+    __tablename__ = "busy_slots"
+    date: datetime.date = Field(default=None)
+    start_time: datetime.time = Field(default=None)
+    end_time: datetime.time = Field(default=None)

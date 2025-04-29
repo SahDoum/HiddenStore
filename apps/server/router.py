@@ -12,6 +12,7 @@ from api import (
     PickupPointAPI,
     DeliveryDetailsAPI,
     PaymentIntentAPI,
+    TimeSlotsAPI,
 )
 from notifier import notify
 
@@ -288,4 +289,52 @@ async def delete_delivery_details(delivery_details_id: str):
         raise HTTPException(
             status_code=404, detail="Delivery details not found or delete failed"
         )
+    return success
+
+
+# API для добавления нового занятого слота
+@app.post("/busy_slots/", response_model=models.TimeSlot)
+async def create_busy_slot(slot: schemas.TimeSlotCreate):
+    try:
+        new_slot = await TimeSlotsAPI.create(slot)
+        return new_slot
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+# API для получения всех занятых слотов
+@app.get("/busy_slots/", response_model=list[models.TimeSlot])
+async def get_busy_slots():
+    slots = await TimeSlotsAPI.get_all()
+    return slots
+
+
+# API для получения слотов по дате
+@app.get("/busy_slots/date/{date}", response_model=list[models.TimeSlot])
+async def get_busy_slots_by_date(date: str):
+    from datetime import datetime
+
+    date_obj = datetime.strptime(date, "%Y-%m-%d").date()
+    slots = await TimeSlotsAPI.get_by_date(date_obj)
+    return slots
+
+
+# API для обновления существующего слота
+@app.put("/busy_slots/{slot_id}", response_model=models.TimeSlot)
+async def update_busy_slot(slot_id: str, slot_update: schemas.TimeSlotUpdate):
+    try:
+        updated_slot = await TimeSlotsAPI.update(slot_id, data=slot_update)
+        if updated_slot is None:
+            raise HTTPException(status_code=404, detail="Слот не найден")
+        return updated_slot
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+# API для удаления слота
+@app.delete("/busy_slots/{slot_id}", response_model=bool)
+async def delete_busy_slot(slot_id: str):
+    success = await TimeSlotsAPI.delete(slot_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Слот не найден")
     return success
